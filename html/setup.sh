@@ -14,7 +14,7 @@ spinner() {
     local pid=$1
     local text=$2
     local delay=0.1
-    local spinstr='⠋⠙⠸⢰⣰⣠⡄⡂⠂'
+    local spinstr='/-\-|'
     echo -ne "${YELLOW}${text}... ${NC}"
     while ps -p $pid > /dev/null; do
         local temp=${spinstr#?}
