@@ -23,8 +23,14 @@ spinner() {
         sleep $delay
         printf "\b\b\b\b\b\b"
     done
+    wait $pid
+    local status=$?
     printf "    \b\b\b\b"
-    echo -e "${GREEN}Done!${NC}"
+    if [ $status -eq 0 ]; then
+        echo -e "${GREEN}Done!${NC}"
+    else
+        echo -e "${RED}Fail!${NC}"
+    fi
 }
 
 # Function to ask for user confirmation
@@ -44,6 +50,14 @@ ask() {
         fi
     done
 }
+
+# Request sudo permissions at the start
+echo -e "${YELLOW}Requesting sudo permissions...${NC}"
+sudo -v
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Sudo permissions are required to run this script.${NC}"
+    exit 1
+fi
 
 # Function to install oh-my-zsh
 install_oh_my_zsh() {
@@ -150,6 +164,26 @@ install_software() {
     fi
 }
 
+# Function to install Nerd Fonts
+install_nerd_fonts() {
+    echo -e "${YELLOW}Installing Nerd Fonts...${NC}"
+    git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git /tmp/nerd-fonts >"$temp_file" 2>&1
+    /tmp/nerd-fonts/install.sh inconsolata >"$temp_file" 2>&1 &
+    spinner $! "Installing Inconsolata Nerd Fonts"
+    rm -rf /tmp/nerd-fonts
+}
+
+# Function to set Nerd Fonts for the terminal
+set_nerd_fonts_terminal() {
+    echo -e "${YELLOW}Setting Nerd Fonts for the terminal...${NC}"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        defaults write com.apple.Terminal "Default Window Settings" -string "NerdFonts"
+        defaults write com.apple.Terminal "Startup Window Settings" -string "NerdFonts"
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        gsettings set org.gnome.desktop.interface monospace-font-name 'Hack Nerd Font 11'
+    fi
+}
+
 # Function to check and install necessary utilities
 check_and_install_utilities() {
     local missing_utils=()
@@ -237,6 +271,10 @@ fi
 
 # Install common software
 install_software
+
+# Install Nerd Fonts and set for terminal
+install_nerd_fonts
+set_nerd_fonts_terminal
 
 # Check if the previous commands were successful
 if [ $? -eq 0 ]; then
