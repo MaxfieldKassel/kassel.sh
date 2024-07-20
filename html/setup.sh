@@ -78,39 +78,48 @@ install_macos_tools() {
     fi
 }
 
-# Function to update package lists and ask for upgrade
-update_and_upgrade() {
+# Function to update package lists
+update_package_lists() {
     echo -e "${YELLOW}Updating package lists...${NC}"
     if command -v apt-get &>/dev/null; then
         sudo apt update >"$temp_file" 2>&1 &
         spinner $! "Updating package lists (apt)"
-        if ask "Do you want to upgrade all packages?"; then
-            sudo apt upgrade -y
-        fi
     elif command -v yum &>/dev/null; then
         sudo yum update -y >"$temp_file" 2>&1 &
         spinner $! "Updating package lists (yum)"
-        if ask "Do you want to upgrade all packages?"; then
-            sudo yum upgrade -y
-        fi
     elif command -v apk &>/dev/null; then
         sudo apk update >"$temp_file" 2>&1 &
         spinner $! "Updating package lists (apk)"
-        if ask "Do you want to upgrade all packages?"; then
-            sudo apk upgrade
-        fi
     elif command -v nix-env &>/dev/null; then
         nix-channel --update >"$temp_file" 2>&1 &
         spinner $! "Updating package lists (nix)"
-        if ask "Do you want to upgrade all packages?"; then
-            nix-env -u
-        fi
     elif command -v brew &>/dev/null; then
         brew update >"$temp_file" 2>&1 &
         spinner $! "Updating package lists (brew)"
-        if ask "Do you want to upgrade all packages?"; then
-            brew upgrade
-        fi
+    else
+        echo -e "${RED}No supported package manager found. Exiting...${NC}"
+        exit 1
+    fi
+}
+
+# Function to upgrade packages
+upgrade_packages() {
+    echo -e "${YELLOW}Upgrading packages...${NC}"
+    if command -v apt-get &>/dev/null; then
+        sudo apt upgrade -y >"$temp_file" 2>&1 &
+        spinner $! "Upgrading packages (apt)"
+    elif command -v yum &>/dev/null; then
+        sudo yum upgrade -y >"$temp_file" 2>&1 &
+        spinner $! "Upgrading packages (yum)"
+    elif command -v apk &>/dev/null; then
+        sudo apk upgrade >"$temp_file" 2>&1 &
+        spinner $! "Upgrading packages (apk)"
+    elif command -v nix-env &>/dev/null; then
+        nix-env -u >"$temp_file" 2>&1 &
+        spinner $! "Upgrading packages (nix)"
+    elif command -v brew &>/dev/null; then
+        brew upgrade >"$temp_file" 2>&1 &
+        spinner $! "Upgrading packages (brew)"
     else
         echo -e "${RED}No supported package manager found. Exiting...${NC}"
         exit 1
@@ -153,16 +162,22 @@ check_and_install_utilities() {
     if [ ${#missing_utils[@]} -ne 0 ]; then
         echo -e "${YELLOW}The following utilities are missing: ${missing_utils[*]}${NC}"
         if ask "Do you want to install them?"; then
+            echo -e "${YELLOW}Installing missing utilities...${NC}"
             if command -v apt-get &>/dev/null; then
-                sudo apt install -y ${missing_utils[*]}
+                sudo apt install -y ${missing_utils[*]} >"$temp_file" 2>&1 &
+                spinner $! "Installing missing utilities (apt)"
             elif command -v yum &>/dev/null; then
-                sudo yum install -y ${missing_utils[*]}
+                sudo yum install -y ${missing_utils[*]} >"$temp_file" 2>&1 &
+                spinner $! "Installing missing utilities (yum)"
             elif command -v apk &>/dev/null; then
-                sudo apk add ${missing_utils[*]}
+                sudo apk add ${missing_utils[*]} >"$temp_file" 2>&1 &
+                spinner $! "Installing missing utilities (apk)"
             elif command -v nix-env &>/dev/null; then
-                nix-env -iA nixpkgs.${missing_utils[*]}
+                nix-env -iA nixpkgs.${missing_utils[*]} >"$temp_file" 2>&1 &
+                spinner $! "Installing missing utilities (nix)"
             elif command -v brew &>/dev/null; then
-                brew install ${missing_utils[*]}
+                brew install ${missing_utils[*]} >"$temp_file" 2>&1 &
+                spinner $! "Installing missing utilities (brew)"
             else
                 echo -e "${RED}No supported package manager found. Exiting...${NC}"
                 exit 1
@@ -194,8 +209,13 @@ temp_file=$(mktemp)
 # Check and install necessary utilities
 check_and_install_utilities
 
-# Update package lists and ask for upgrade
-update_and_upgrade
+# Update package lists
+update_package_lists
+
+# Ask for upgrade
+if ask "Do you want to upgrade all packages?"; then
+    upgrade_packages
+fi
 
 # Install developer tools and Homebrew on macOS if needed
 if [[ "$OSTYPE" == "darwin"* ]]; then
