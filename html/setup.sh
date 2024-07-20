@@ -167,8 +167,8 @@ install_software() {
 # Function to install Nerd Fonts
 install_nerd_fonts() {
     echo -e "${YELLOW}Installing Nerd Fonts...${NC}"
-    git clone --depth 1 https://github.com/ryanoasis/nerd-fonts.git /tmp/nerd-fonts >"$temp_file" 2>&1
-    spinner $! "Cloning Inconsolata Nerd Fonts"
+    git clone --depth 1 -b master https://github.com/ryanoasis/nerd-fonts.git /tmp/nerd-fonts >"$temp_file" 2>&1 &
+    spinner $! "Cloning Nerd Fonts"
     /tmp/nerd-fonts/install.sh inconsolata >"$temp_file" 2>&1 &
     spinner $! "Installing Inconsolata Nerd Fonts"
     rm -rf /tmp/nerd-fonts
