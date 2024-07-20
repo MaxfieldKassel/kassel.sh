@@ -14,7 +14,7 @@ spinner() {
     local pid=$1
     local text=$2
     local delay=0.1
-    local spinstr='/-\-|'
+    local spinstr='/-\|'
     echo -ne "${YELLOW}${text}... ${NC}"
     while ps -p $pid > /dev/null; do
         local temp=${spinstr#?}
@@ -48,13 +48,15 @@ ask() {
 # Function to install oh-my-zsh
 install_oh_my_zsh() {
     echo -e "${YELLOW}Installing oh-my-zsh...${NC}"
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" >"$temp_file" 2>&1 &
+    spinner $! "Installing oh-my-zsh"
 }
 
 # Function to install oh-my-bash
 install_oh_my_bash() {
     echo -e "${YELLOW}Installing oh-my-bash...${NC}"
-    bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)"
+    bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" >"$temp_file" 2>&1 &
+    spinner $! "Installing oh-my-bash"
 }
 
 # Function to install developer tools and Homebrew on macOS
@@ -71,7 +73,8 @@ install_macos_tools() {
     echo -e "${YELLOW}Checking for Homebrew...${NC}"
     if ! command -v brew &>/dev/null; then
         echo -e "${YELLOW}Installing Homebrew...${NC}"
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" >"$temp_file" 2>&1 &
+        spinner $! "Installing Homebrew"
     fi
 }
 
@@ -79,27 +82,32 @@ install_macos_tools() {
 update_and_upgrade() {
     echo -e "${YELLOW}Updating package lists...${NC}"
     if command -v apt-get &>/dev/null; then
-        sudo apt update
+        sudo apt update >"$temp_file" 2>&1 &
+        spinner $! "Updating package lists (apt)"
         if ask "Do you want to upgrade all packages?"; then
             sudo apt upgrade -y
         fi
     elif command -v yum &>/dev/null; then
-        sudo yum update -y
+        sudo yum update -y >"$temp_file" 2>&1 &
+        spinner $! "Updating package lists (yum)"
         if ask "Do you want to upgrade all packages?"; then
             sudo yum upgrade -y
         fi
     elif command -v apk &>/dev/null; then
-        sudo apk update
+        sudo apk update >"$temp_file" 2>&1 &
+        spinner $! "Updating package lists (apk)"
         if ask "Do you want to upgrade all packages?"; then
             sudo apk upgrade
         fi
     elif command -v nix-env &>/dev/null; then
-        nix-channel --update
+        nix-channel --update >"$temp_file" 2>&1 &
+        spinner $! "Updating package lists (nix)"
         if ask "Do you want to upgrade all packages?"; then
             nix-env -u
         fi
     elif command -v brew &>/dev/null; then
-        brew update
+        brew update >"$temp_file" 2>&1 &
+        spinner $! "Updating package lists (brew)"
         if ask "Do you want to upgrade all packages?"; then
             brew upgrade
         fi
@@ -113,15 +121,20 @@ update_and_upgrade() {
 install_software() {
     echo -e "${YELLOW}Installing common software...${NC}"
     if command -v apt-get &>/dev/null; then
-        sudo apt install -y $COMMON_SOFTWARE
+        sudo apt install -y $COMMON_SOFTWARE >"$temp_file" 2>&1 &
+        spinner $! "Installing common software (apt)"
     elif command -v yum &>/dev/null; then
-        sudo yum install -y $COMMON_SOFTWARE
+        sudo yum install -y $COMMON_SOFTWARE >"$temp_file" 2>&1 &
+        spinner $! "Installing common software (yum)"
     elif command -v apk &>/dev/null; then
-        sudo apk add $COMMON_SOFTWARE
+        sudo apk add $COMMON_SOFTWARE >"$temp_file" 2>&1 &
+        spinner $! "Installing common software (apk)"
     elif command -v nix-env &>/dev/null; then
-        nix-env -iA nixpkgs.${COMMON_SOFTWARE// / nixpkgs.}
+        nix-env -iA nixpkgs.${COMMON_SOFTWARE// / nixpkgs.} >"$temp_file" 2>&1 &
+        spinner $! "Installing common software (nix)"
     elif command -v brew &>/dev/null; then
-        brew install $COMMON_SOFTWARE
+        brew install $COMMON_SOFTWARE >"$temp_file" 2>&1 &
+        spinner $! "Installing common software (brew)"
     else
         echo -e "${RED}No supported package manager found. Exiting...${NC}"
         exit 1
@@ -179,28 +192,23 @@ done
 temp_file=$(mktemp)
 
 # Check and install necessary utilities
-check_and_install_utilities >"$temp_file" 2>&1 &
-spinner $! "Checking and installing necessary utilities"
+check_and_install_utilities
 
 # Update package lists and ask for upgrade
-update_and_upgrade >"$temp_file" 2>&1 &
-spinner $! "Updating package lists"
+update_and_upgrade
 
 # Install developer tools and Homebrew on macOS if needed
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    install_macos_tools >"$temp_file" 2>&1 &
-    spinner $! "Installing developer tools and Homebrew"
+    install_macos_tools
 fi
 
 # Detect current shell
 current_shell=$(basename "$SHELL")
 
 if [[ "$current_shell" == "zsh" ]]; then
-    install_oh_my_zsh >"$temp_file" 2>&1 &
-    spinner $! "Installing oh-my-zsh"
+    install_oh_my_zsh
 elif [[ "$current_shell" == "bash" ]]; then
-    install_oh_my_bash >"$temp_file" 2>&1 &
-    spinner $! "Installing oh-my-bash"
+    install_oh_my_bash
 else
     echo -e "${RED}Unsupported shell: $current_shell. Exiting...${NC}"
     rm "$temp_file"
@@ -208,8 +216,7 @@ else
 fi
 
 # Install common software
-install_software >"$temp_file" 2>&1 &
-spinner $! "Installing common software"
+install_software
 
 # Check if the previous commands were successful
 if [ $? -eq 0 ]; then
