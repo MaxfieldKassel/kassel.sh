@@ -11,7 +11,7 @@ CYAN="\033[0;36m"
 WHITE="\033[0;37m"
 
 # Function to log messages
-log() {
+log_debug() {
     if $DEBUG; then
         echo -e "${YELLOW}[DEBUG] $1${NC}"
     fi
@@ -28,9 +28,9 @@ ask() {
         read -r answer
         echo "User input: $answer"
         case "$answer" in
-            [yY]) return 0 ;;
-            [nN]) return 1 ;;
-            *) echo -e "${RED}Please answer y or n.${NC}" ;;
+        [yY]) return 0 ;;
+        [nN]) return 1 ;;
+        *) echo -e "${RED}Please answer y or n.${NC}" ;;
         esac
     done
 }
@@ -56,7 +56,6 @@ spinner() {
         printf "\r [\e[31m✖\e[0m] ${text}...\n"
     fi
 }
-
 
 # Request sudo permissions at the start
 request_sudo() {

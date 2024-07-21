@@ -5,28 +5,28 @@ BASE_URL="https://kassel.sh"
 DEBUG=false
 
 download_and_source_script() {
-    local script_name=$1
-    source <(curl -s "$BASE_URL/$script_name")
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Failed to download $script_name. Exiting...${NC}"
-        exit 1
-    fi
-    log "Downloaded $script_name"
+  local script_name=$1
+  source <(curl -s "$BASE_URL/$script_name")
+  if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to download $script_name. Exiting...${NC}"
+    exit 1
+  fi
+  log_debug "Downloaded $script_name"
 }
 
 # Parse options
 while getopts ":ad" opt; do
   case $opt in
-    a)
-      AUTO=true
-      ;;
-    d)
-      DEBUG=true
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
+  a)
+    AUTO=true
+    ;;
+  d)
+    DEBUG=true
+    ;;
+  \?)
+    echo "Invalid option: -$OPTARG" >&2
+    exit 1
+    ;;
   esac
 done
 
@@ -42,51 +42,51 @@ download_and_source_script "update_and_upgrade.sh"
 AUTO=false
 temp_file=$(mktemp)
 
-log "Requesting sudo permissions"
+log_debug "Requesting sudo permissions"
 request_sudo
 
-log "Checking and installing necessary utilities"
+log_debug "Checking and installing necessary utilities"
 check_and_install_utilities
 
-log "Updating package lists"
+log_debug "Updating package lists"
 update_package_lists
 
-log "Asking for upgrade confirmation"
+log_debug "Asking for upgrade confirmation"
 if ask "Do you want to upgrade all packages?"; then
-    log "Upgrading packages"
-    upgrade_packages
+  log_debug "Upgrading packages"
+  upgrade_packages
 fi
 
-log "Installing developer tools and Homebrew on macOS if needed"
+log_debug "Installing developer tools and Homebrew on macOS if needed"
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    install_macos_tools
+  install_macos_tools
 fi
 
-log "Detecting current shell"
+log_debug "Detecting current shell"
 current_shell=$(basename "$SHELL")
 
 if [[ "$current_shell" == "zsh" ]]; then
-    log "Installing oh-my-zsh"
-    install_oh_my_zsh
+  log_debug "Installing oh-my-zsh"
+  install_oh_my_zsh
 elif [[ "$current_shell" == "bash" ]]; then
-    log "Installing oh-my-bash"
-    install_oh_my_bash
+  log_debug "Installing oh-my-bash"
+  install_oh_my_bash
 else
-    echo -e "${RED}Unsupported shell: $current_shell. Exiting...${NC}"
-    rm "$temp_file"
-    exit 1
+  echo -e "${RED}Unsupported shell: $current_shell. Exiting...${NC}"
+  rm "$temp_file"
+  exit 1
 fi
 
-log "Installing common software"
+log_debug "Installing common software"
 install_software
 
-log "Installing font"
+log_debug "Installing font"
 install_and_set_font
 
 # Check if the previous commands were successful
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}Setup complete!${NC}"
-    rm "$temp_file"
+  echo -e "${GREEN}Setup complete!${NC}"
+  rm "$temp_file"
 else
-    echo -e "${RED}An error occurred. Check the log file for details: $temp_file${NC}"
+  echo -e "${RED}An error occurred. Check the log_debug file for details: $temp_file${NC}"
 fi

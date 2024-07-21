@@ -63,10 +63,10 @@ install_and_set_font() {
     fi
 
     if [[ $HEADLESS -eq 1 ]]; then
-        log "Headless system detected. Installing and setting Inconsolata font for the console..."
+        log_debug "Headless system detected. Installing and setting Inconsolata font for the console..."
         install_and_set_console_font
     else
-        log "Setting font for the terminal..."
+        log_debug "Setting font for the terminal..."
         install_and_set_terminal_font
     fi
 }
