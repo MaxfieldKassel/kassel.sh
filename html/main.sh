@@ -2,13 +2,57 @@
 
 BASE_URL="https://kassel.sh"
 
-download_and_source_script() {
-  local script_name=$1
-  local temp_file=$(mktemp)
-  curl -sSL "$BASE_URL/$script_name" -o "$temp_file"
-  source "$temp_file"
-  rm -f "$temp_file"
+DEBUG=false
+
+log() {
+    if $DEBUG; then
+        echo -e "${YELLOW}[DEBUG] $1${NC}"
+    fi
 }
+
+download_and_source_script() {
+    local script_name=$1
+    local temp_file=$(mktemp)
+    
+    log "Downloading $script_name to $temp_file"
+    curl -sSL "$BASE_URL/$script_name" -o "$temp_file"
+    
+    if [ $? -eq 0 ]; then
+        log "Successfully downloaded $script_name"
+    else
+        log "Failed to download $script_name"
+        rm -f "$temp_file"
+        return 1
+    fi
+    
+    log "Sourcing $temp_file"
+    source "$temp_file"
+    
+    log "Cleaning up $temp_file"
+    rm -f "$temp_file"
+}
+
+# Parse options
+while getopts ":ad" opt; do
+  case $opt in
+    a)
+      AUTO=true
+      ;;
+    d)
+      DEBUG=true
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Colors for output
+YELLOW="\033[1;33m"
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+NC="\033[0m" # No Color
 
 # Download and source the scripts
 download_and_source_script "spinner.sh"
@@ -21,64 +65,54 @@ download_and_source_script "update_and_upgrade.sh"
 
 # Main script
 AUTO=false
-while getopts ":a" opt; do
-  case $opt in
-  a)
-    AUTO=true
-    ;;
-  \?)
-    echo "Invalid option: -$OPTARG" >&2
-    exit 1
-    ;;
-  esac
-done
-
-# Create a temporary file for command output
 temp_file=$(mktemp)
 
-# Request sudo permissions
+log "Requesting sudo permissions"
 request_sudo
 
-# Check and install necessary utilities
+log "Checking and installing necessary utilities"
 check_and_install_utilities
 
-# Update package lists
+log "Updating package lists"
 update_package_lists
 
-# Ask for upgrade
+log "Asking for upgrade confirmation"
 if ask "Do you want to upgrade all packages?"; then
-  upgrade_packages
+    log "Upgrading packages"
+    upgrade_packages
 fi
 
-# Install developer tools and Homebrew on macOS if needed
+log "Installing developer tools and Homebrew on macOS if needed"
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  install_macos_tools
+    install_macos_tools
 fi
 
-# Detect current shell
+log "Detecting current shell"
 current_shell=$(basename "$SHELL")
 
 if [[ "$current_shell" == "zsh" ]]; then
-  install_oh_my_zsh
+    log "Installing oh-my-zsh"
+    install_oh_my_zsh
 elif [[ "$current_shell" == "bash" ]]; then
-  install_oh_my_bash
+    log "Installing oh-my-bash"
+    install_oh_my_bash
 else
-  echo -e "${RED}Unsupported shell: $current_shell. Exiting...${NC}"
-  rm "$temp_file"
-  exit 1
+    echo -e "${RED}Unsupported shell: $current_shell. Exiting...${NC}"
+    rm "$temp_file"
+    exit 1
 fi
 
-# Install common software
+log "Installing common software"
 install_software
 
-# Install Nerd Fonts and set for terminal
+log "Installing Nerd Fonts and setting for terminal"
 install_nerd_fonts
 set_nerd_fonts_terminal
 
 # Check if the previous commands were successful
 if [ $? -eq 0 ]; then
-  echo -e "${GREEN}Setup complete!${NC}"
-  rm "$temp_file"
+    echo -e "${GREEN}Setup complete!${NC}"
+    rm "$temp_file"
 else
-  echo -e "${RED}An error occurred. Check the log file for details: $temp_file${NC}"
+    echo -e "${RED}An error occurred. Check the log file for details: $temp_file${NC}"
 fi
