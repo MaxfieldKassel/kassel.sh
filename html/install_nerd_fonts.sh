@@ -5,11 +5,12 @@ if ! declare -f spinner &>/dev/null; then
     source <(curl -s "https://kassel.sh/utils.sh")
 fi
 
-
-# Function to check if the system is headless
+# Check if the system is headless
 if [[ -z "$DISPLAY" ]] && ! command -v gnome-terminal &> /dev/null && ! command -v dconf &> /dev/null; then
+    echo -e "${CYAN}Headless system detected.${NC}"
     HEADLESS=1
 else
+    echo -e "${CYAN}GUI system detected.${NC}"
     HEADLESS=0
 fi
 
@@ -30,21 +31,29 @@ install_nerd_font() {
     spinner $! "Refreshing font cache"
 }
 
-# Function to set Nerd Font for the console
-set_nerd_font_console() {
-    local font_path="/usr/share/consolefonts/Lat15-TerminusBold14.psf.gz"
-    echo -e "${CYAN}Setting $font_path for the console...${NC}"
+# Function to install and set the console font
+install_and_set_console_font() {
+    local font_url="https://github.com/xeechou/Inconsolata-psf/raw/master/Inconsolata-32r.psf"
+    local font_path="/usr/share/consolefonts/Inconsolata-32r.psf"
 
-    sudo echo "FONT=$font_path" > /etc/default/console-setup
-    sudo echo "FONTFACE=\"Terminus\"" >> /etc/default/console-setup
-    sudo echo "FONTSIZE=\"14\"" >> /etc/default/console-setup
+    echo -e "${CYAN}Installing Inconsolata font for the console...${NC}"
+
+    sudo mkdir -p /usr/share/consolefonts
+    sudo curl -fLo "$font_path" "$font_url" >"$temp_file" 2>&1 &
+    spinner $! "Downloading Inconsolata console font"
+
+    echo -e "${CYAN}Setting Inconsolata font for the console...${NC}"
+
+    sudo bash -c "echo 'FONT=$font_path' > /etc/default/console-setup"
+    sudo bash -c "echo 'FONTFACE=\"Inconsolata\"' >> /etc/default/console-setup"
+    sudo bash -c "echo 'FONTSIZE=\"32\"' >> /etc/default/console-setup"
 
     sudo update-initramfs -u >"$temp_file" 2>&1 &
     spinner $! "Updating initramfs"
 }
 
 # Function to set Nerd Font for the terminal
-set_nerd_font_terminal() {
+set_terminal_font() {
     local font_name="Inconsolata Nerd Font"
     echo -e "${CYAN}Setting $font_name for the terminal...${NC}"
     if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -57,15 +66,26 @@ set_nerd_font_terminal() {
     fi
 }
 
+# Function to log messages
+log() {
+    local message=$1
+    echo -e "${CYAN}${message}${NC}"
+}
+
 # Function to install and set Nerd Font
 install_and_set_nerd_font() {
     install_nerd_font
 
     if [[ $HEADLESS -eq 1 ]]; then
-        log "Headless system detected. Setting Nerd Font for the console..."
-        set_nerd_font_console
+        log "Headless system detected. Installing and setting Inconsolata font for the console..."
+        install_and_set_console_font
     else
         log "Setting Nerd Font for the terminal..."
-        set_nerd_font_terminal
+        set_terminal_font
     fi
 }
+
+# Check if script is being executed or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    install_and_set_nerd_font
+fi
