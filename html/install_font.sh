@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Add util functions if not already defined
 if ! declare -f spinner &>/dev/null; then

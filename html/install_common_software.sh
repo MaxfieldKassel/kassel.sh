@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 COMMON_SOFTWARE="git neovim curl wget htop"
 

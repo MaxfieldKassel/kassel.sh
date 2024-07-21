@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Function to install oh-my-zsh
 install_oh_my_zsh() {
@@ -13,7 +13,6 @@ install_oh_my_bash() {
     bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" >"$temp_file" 2>&1 &
     spinner $! "Installing oh-my-bash"
 }
-
 
 install_shell_tools() {
     current_shell=$(basename "$SHELL")
