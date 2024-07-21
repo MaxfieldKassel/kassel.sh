@@ -18,6 +18,7 @@ ask() {
     fi
     while true; do
         read -r -p "$prompt (y/n): " answer
+        echo "User input: $answer"
         case "$answer" in
             [yY]) return 0 ;;
             [nN]) return 1 ;;
