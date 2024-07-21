@@ -8,7 +8,7 @@ fi
 
 # Function to check if the system is headless
 is_headless() {
-    if [[ -z "$DISPLAY" ]] && [[ $(tty) == /dev/tty* ]]; then
+    if [[ -z "$DISPLAY" ]] && ! command -v gnome-terminal &> /dev/null && ! command -v dconf &> /dev/null; then
         return 0
     else
         return 1
