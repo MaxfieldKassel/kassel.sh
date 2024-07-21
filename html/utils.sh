@@ -12,19 +12,17 @@ WHITE="\033[0;37m"
 
 # Function to ask for user confirmation
 ask() {
-    local prompt=$1
+    local prompt="$1"
     if $AUTO; then
         return 0
     fi
     while true; do
-        read -p "$prompt (y/n): " answer
-        if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
-            return 0
-        elif [[ "$answer" == "n" || "$answer" == "N" ]]; then
-            return 1
-        else
-            echo -e "${RED}Please answer y or n.${NC}"
-        fi
+        read -r -p "$prompt (y/n): " answer
+        case "$answer" in
+            [yY]) return 0 ;;
+            [nN]) return 1 ;;
+            *) echo -e "${RED}Please answer y or n.${NC}" ;;
+        esac
     done
 }
 
