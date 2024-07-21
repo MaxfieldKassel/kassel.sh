@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "$(dirname "$0")/spinner.sh"
-
 # Function to install oh-my-zsh
 install_oh_my_zsh() {
     echo -e "${YELLOW}Installing oh-my-zsh...${NC}"

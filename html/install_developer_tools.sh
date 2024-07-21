@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "$(dirname "$0")/spinner.sh"
-
 # Function to install developer tools and Homebrew on macOS
 install_macos_tools() {
     echo -e "${YELLOW}Checking for Xcode command line tools...${NC}"

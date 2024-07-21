@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "$(dirname "$0")/spinner.sh"
-
 # Function to update package lists
 update_package_lists() {
     echo -e "${YELLOW}Updating package lists...${NC}"

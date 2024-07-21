@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source "$(dirname "$0")/spinner.sh"
-
 # Function to install Nerd Fonts
 install_nerd_fonts() {
     echo -e "${YELLOW}Installing Nerd Fonts...${NC}"

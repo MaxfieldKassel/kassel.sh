@@ -38,7 +38,7 @@ request_sudo() {
     fi
 }
 
-# Function to check and install necessary utilities
+# Function to check and install necessary utilities for running sh scripts
 check_and_install_utilities() {
     local missing_utils=()
     for util in ps awk grep; do
