@@ -25,6 +25,13 @@ install_macos_tools() {
         spinner $! "Installing Homebrew"
 
         # Adding Homebrew to ~/.bashrc
+        echo -e "${CYAN}Adding Homebrew to ~/.bashrc...${NC}"
+        {
+            echo ''
+            echo '# Set PATH, MANPATH, etc., for Homebrew.'
+            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+        } >>~/.bashrc
+
         echo -e "${CYAN}Adding Homebrew to ~/.zshrc...${NC}"
         {
             echo ''
@@ -32,9 +39,9 @@ install_macos_tools() {
             echo 'eval "$(/opt/homebrew/bin/brew shellenv)"'
         } >>~/.zshrc
 
-        # Source ~/.zshrc
-        echo -e "${CYAN}Sourcing ~/.zshrc...${NC}"
-        source ~/.zshrc
+        # Source ~/.bashrc
+        echo -e "${CYAN}Sourcing ~/.bashrc...${NC}"
+        source ~/.bashrc
 
     else
         echo -e "${CYAN}Homebrew already installed.${NC}"
