@@ -4,16 +4,10 @@ BASE_URL="https://kassel.sh"
 
 DEBUG=false
 
-log() {
-    if $DEBUG; then
-        echo -e "${YELLOW}[DEBUG] $1${NC}"
-    fi
-}
-
 download_and_source_script() {
     local script_name=$1
-    log "Downloading $script_name"
     source <(curl -s "$BASE_URL/$script_name")
+    log "Downloaded $script_name"
 }
 
 # Parse options

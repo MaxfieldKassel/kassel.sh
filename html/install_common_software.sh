@@ -31,4 +31,7 @@ install_software() {
     fi
 }
 
-install_software
+# Check if script is being executed or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    install_software
+fi

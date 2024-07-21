@@ -24,6 +24,9 @@ install_macos_tools() {
     fi
 }
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    install_macos_tools
+# Check if script is being executed or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        install_macos_tools
+    fi
 fi

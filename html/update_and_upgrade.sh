@@ -48,8 +48,11 @@ upgrade_packages() {
     fi
 }
 
-update_package_lists
+# Check if script is being executed or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    update_package_lists
 
-if ask "Do you want to upgrade all packages?"; then
-    upgrade_packages
+    if ask "Do you want to upgrade all packages?"; then
+        upgrade_packages
+    fi
 fi

@@ -14,14 +14,21 @@ install_oh_my_bash() {
     spinner $! "Installing oh-my-bash"
 }
 
-# Detect current shell
-current_shell=$(basename "$SHELL")
 
-if [[ "$current_shell" == "zsh" ]]; then
-    install_oh_my_zsh
-elif [[ "$current_shell" == "bash" ]]; then
-    install_oh_my_bash
-else
-    echo -e "${RED}Unsupported shell: $current_shell. Exiting...${NC}"
-    exit 1
+install_shell_tools() {
+    current_shell=$(basename "$SHELL")
+
+    if [[ "$current_shell" == "zsh" ]]; then
+        install_oh_my_zsh
+    elif [[ "$current_shell" == "bash" ]]; then
+        install_oh_my_bash
+    else
+        echo -e "${RED}Unsupported shell: $current_shell. Exiting...${NC}"
+        exit 1
+    fi
+}
+
+# Check if script is being executed or sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    install_shell_tools
 fi
