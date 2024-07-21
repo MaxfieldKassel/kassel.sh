@@ -10,7 +10,7 @@ MAGENTA="\033[0;35m"
 CYAN="\033[0;36m"
 WHITE="\033[0;37m"
 
-# Function to log messages
+# Function to log_debug messages
 log_debug() {
     if $DEBUG; then
         echo -e "${YELLOW}[DEBUG] $1${NC}"

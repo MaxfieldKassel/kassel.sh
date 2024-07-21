@@ -25,6 +25,7 @@ download_and_source_script() {
     rm "$temp_script"
     log_message "Downloaded and sourced $script_name"
 }
+
 # Parse options
 while getopts ":ad" opt; do
   case $opt in
@@ -56,6 +57,11 @@ temp_file=$(mktemp)
 log_debug "Requesting sudo permissions"
 request_sudo
 
+log_debug "Installing developer tools and Homebrew on macOS if needed"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  install_macos_tools
+fi
+
 log_debug "Checking and installing necessary utilities"
 check_and_install_utilities
 
@@ -66,11 +72,6 @@ log_debug "Asking for upgrade confirmation"
 if ask "Do you want to upgrade all packages?"; then
   log_debug "Upgrading packages"
   upgrade_packages
-fi
-
-log_debug "Installing developer tools and Homebrew on macOS if needed"
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  install_macos_tools
 fi
 
 log_debug "Detecting current shell"
