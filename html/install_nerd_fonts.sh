@@ -30,12 +30,6 @@ install_nerd_font() {
     # Refresh font cache
     fc-cache -fv >"$temp_file" 2>&1 &
     spinner $! "Refreshing font cache"
-
-    if [ $? -eq 0 ]; then
-        echo -e "${GREEN}Successfully installed $font Nerd Font${NC}"
-    else
-        echo -e "${RED}Failed to install $font Nerd Font${NC}"
-    fi
 }
 
 # Function to set Nerd Font for the console
@@ -47,13 +41,8 @@ set_nerd_font_console() {
     sudo echo "FONTFACE=\"Terminus\"" >> /etc/default/console-setup
     sudo echo "FONTSIZE=\"14\"" >> /etc/default/console-setup
 
-    sudo update-initramfs -u
-
-    if [ $? -eq 0 ]; then
-        echo -e "${GREEN}Set $font_path for the console${NC}"
-    else
-        echo -e "${RED}Failed to set $font_path for the console${NC}"
-    fi
+    sudo update-initramfs -u >"$temp_file" 2>&1 &
+    spinner $! "Updating initramfs"
 }
 
 # Function to set Nerd Font for the terminal
@@ -62,15 +51,11 @@ set_nerd_font_terminal() {
     echo -e "${CYAN}Setting $font_name for the terminal...${NC}"
     if [[ "$OSTYPE" == "darwin"* ]]; then
         defaults write com.apple.Terminal "Default Window Settings" -string "$font_name"
-        defaults write com.apple.Terminal "Startup Window Settings" -string "$font_name"
-        echo -e "${GREEN}Set $font_name for macOS Terminal${NC}"
+        defaults write com.apple.Terminal "Startup Window Settings" -string "$font_name" >"$temp_file" 2>&1 &
+        spinner $! "Setting $font_name for Terminal"
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        gsettings set org.gnome.desktop.interface monospace-font-name "$font_name 11"
-        if [ $? -eq 0 ]; then
-            echo -e "${GREEN}Set $font_name for GNOME Terminal${NC}"
-        else
-            echo -e "${RED}Failed to set $font_name for GNOME Terminal${NC}"
-        fi
+        gsettings set org.gnome.desktop.interface monospace-font-name "$font_name 11" >"$temp_file" 2>&1 &
+        spinner $! "Setting $font_name for GNOME Terminal"
     fi
 }
 
@@ -79,8 +64,10 @@ install_and_set_nerd_font() {
     install_nerd_font
 
     if is_headless; then
+        log "Headless system detected. Setting Nerd Font for the console..."
         set_nerd_font_console
     else
+        log "Setting Nerd Font for the terminal..."
         set_nerd_font_terminal
     fi
 }
