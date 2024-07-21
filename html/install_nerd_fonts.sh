@@ -7,13 +7,11 @@ fi
 
 
 # Function to check if the system is headless
-is_headless() {
-    if [[ -z "$DISPLAY" ]] && ! command -v gnome-terminal &> /dev/null && ! command -v dconf &> /dev/null; then
-        return 0
-    else
-        return 1
-    fi
-}
+if [[ -z "$DISPLAY" ]] && ! command -v gnome-terminal &> /dev/null && ! command -v dconf &> /dev/null; then
+    HEADLESS=1
+else
+    HEADLESS=0
+fi
 
 # Function to install Nerd Font
 install_nerd_font() {
@@ -63,7 +61,7 @@ set_nerd_font_terminal() {
 install_and_set_nerd_font() {
     install_nerd_font
 
-    if is_headless; then
+    if [[ $HEADLESS -eq 1 ]]; then
         log "Headless system detected. Setting Nerd Font for the console..."
         set_nerd_font_console
     else
