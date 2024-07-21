@@ -23,7 +23,7 @@ download_and_source_script() {
         exit 1
     fi
     rm "$temp_script"
-    log_message "Downloaded and sourced $script_name"
+    log_debug "Downloaded and sourced $script_name"
 }
 
 # Parse options
