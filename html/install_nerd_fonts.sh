@@ -4,7 +4,7 @@
 # Function to install Nerd Fonts
 install_nerd_fonts() {
     local font="Inconsolata"
-    local font_url="https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/Inconsolata/Regular/InconsolataNerdFont-Regular.ttf"
+    local font_url="https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/Inconsolata/InconsolataNerdFont-Regular.ttf"
     local font_dir="$HOME/.local/share/fonts"
 
     echo -e "${CYAN}Installing $font Nerd Font...${NC}"
