@@ -14,6 +14,8 @@ install_macos_tools() {
         while ! xcode-select -p &>/dev/null; do
             sleep 5
         done
+    else
+        echo -e "${CYAN}Xcode command line tools already installed.${NC}"
     fi
 
     echo -e "${CYAN}Checking for Homebrew...${NC}"
@@ -21,6 +23,8 @@ install_macos_tools() {
         echo -e "${CYAN}Installing Homebrew...${NC}"
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" >"$temp_file" 2>&1 &
         spinner $! "Installing Homebrew"
+    else
+        echo -e "${CYAN}Homebrew already installed.${NC}"
     fi
 }
 
