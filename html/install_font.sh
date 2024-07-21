@@ -33,27 +33,30 @@ install_and_set_terminal_font() {
     fi
 }
 
-# Function to install and set the console font
+# This function uses the Cozette font for the console,
+# which is a patched version of the Cozette font, which
+# has symbols for powerline and other icons. The font
+# is downloaded from the official GitHub release page.
 install_and_set_console_font() {
-    local font_url="https://github.com/xeechou/Inconsolata-psf/raw/master/Inconsolata-16r.psf"
-    local font_path="/usr/share/consolefonts/Inconsolata-16r.psf"
+    local font_url="https://github.com/slavfox/Cozette/releases/download/v.1.24.1/cozette_hidpi.psf"
+    local font_path="/usr/share/consolefonts/cozette_hidpi.psf"
+    local temp_file=$(mktemp)
 
-    echo -e "${CYAN}Installing Inconsolata font for the console...${NC}"
+    echo -e "${CYAN}Installing Cozette font for the console...${NC}"
 
     sudo mkdir -p /usr/share/consolefonts
     sudo curl -fLo "$font_path" "$font_url" >"$temp_file" 2>&1 &
-    spinner $! "Downloading Inconsolata console font"
+    spinner $! "Downloading Cozette console font"
 
-    echo -e "${CYAN}Setting Inconsolata font for the console...${NC}"
+    echo -e "${CYAN}Setting Cozette font for the console...${NC}"
 
     sudo bash -c "echo 'FONT=$font_path' > /etc/default/console-setup"
-    sudo bash -c "echo 'FONTFACE=\"Inconsolata\"' >> /etc/default/console-setup"
+    sudo bash -c "echo 'FONTFACE=\"Cozette\"' >> /etc/default/console-setup"
     sudo bash -c "echo 'FONTSIZE=\"16\"' >> /etc/default/console-setup"
 
     sudo update-initramfs -u >"$temp_file" 2>&1 &
     spinner $! "Updating initramfs"
 }
-
 # Function to install and set font
 install_and_set_font() {
     if [[ -z "$DISPLAY" ]] && ! command -v gnome-terminal &>/dev/null && ! command -v dconf &>/dev/null; then
