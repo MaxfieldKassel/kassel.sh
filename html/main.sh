@@ -76,8 +76,8 @@ fi
 log "Installing common software"
 install_software
 
-log "Installing Nerd Fonts and setting for terminal"
-install_and_set_nerd_font
+log "Installing font"
+install_and_set_font
 
 # Check if the previous commands were successful
 if [ $? -eq 0 ]; then

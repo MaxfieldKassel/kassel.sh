@@ -5,17 +5,17 @@ if ! declare -f spinner &>/dev/null; then
     source <(curl -s "https://kassel.sh/utils.sh")
 fi
 
-# Function to install Nerd Font
-install_and_set_terminal_nerd_font() {
+# Function to install and set the terminal font
+install_and_set_terminal_font() {
     local font="Inconsolata"
     local font_url="https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/Inconsolata/InconsolataNerdFont-Regular.ttf"
     local font_dir="$HOME/.local/share/fonts"
 
-    echo -e "${CYAN}Installing $font Nerd Font...${NC}"
+    echo -e "${CYAN}Installing $font font...${NC}"
 
     mkdir -p "$font_dir"
     curl -fLo "$font_dir/InconsolataNerdFont-Regular.ttf" "$font_url" >"$temp_file" 2>&1 &
-    spinner $! "Downloading $font Nerd Font"
+    spinner $! "Downloading $font font"
 
     # Refresh font cache
     fc-cache -fv >"$temp_file" 2>&1 &
@@ -54,8 +54,8 @@ install_and_set_console_font() {
     spinner $! "Updating initramfs"
 }
 
-# Function to install and set Nerd Font
-install_and_set_nerd_font() {
+# Function to install and set font
+install_and_set_font() {
     if [[ -z "$DISPLAY" ]] && ! command -v gnome-terminal &>/dev/null && ! command -v dconf &>/dev/null; then
         HEADLESS=1
     else
@@ -66,12 +66,12 @@ install_and_set_nerd_font() {
         log "Headless system detected. Installing and setting Inconsolata font for the console..."
         install_and_set_console_font
     else
-        log "Setting Nerd Font for the terminal..."
-        install_and_set_nerd_font
+        log "Setting font for the terminal..."
+        install_and_set_terminal_font
     fi
 }
 
 # Check if script is being executed or sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    install_and_set_nerd_font
+    install_and_set_font
 fi
