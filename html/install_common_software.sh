@@ -2,9 +2,14 @@
 
 COMMON_SOFTWARE="git neovim curl wget htop"
 
+# Add util functions if not already defined
+if ! declare -f spinner &>/dev/null; then
+    source <(curl -s "https://kassel.sh/utils.sh")
+fi
+
 # Function to install common software
 install_software() {
-    echo -e "${YELLOW}Installing common software...${NC}"
+    echo -e "${CYAN}Installing common software...${NC}"
     if command -v apt-get &>/dev/null; then
         sudo apt install -y $COMMON_SOFTWARE >"$temp_file" 2>&1 &
         spinner $! "Installing common software (apt)"

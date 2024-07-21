@@ -12,24 +12,8 @@ log() {
 
 download_and_source_script() {
     local script_name=$1
-    local temp_file=$(mktemp)
-    
-    log "Downloading $script_name to $temp_file"
-    curl -sSL "$BASE_URL/$script_name" -o "$temp_file"
-    
-    if [ $? -eq 0 ]; then
-        log "Successfully downloaded $script_name"
-    else
-        log "Failed to download $script_name"
-        rm -f "$temp_file"
-        return 1
-    fi
-    
-    log "Sourcing $temp_file"
-    source "$temp_file"
-    
-    log "Cleaning up $temp_file"
-    rm -f "$temp_file"
+    log "Downloading $script_name"
+    source <(curl -s "$BASE_URL/$script_name")
 }
 
 # Parse options
@@ -48,14 +32,7 @@ while getopts ":ad" opt; do
   esac
 done
 
-# Colors for output
-YELLOW="\033[1;33m"
-GREEN="\033[0;32m"
-RED="\033[0;31m"
-NC="\033[0m" # No Color
-
 # Download and source the scripts
-download_and_source_script "spinner.sh"
 download_and_source_script "utils.sh"
 download_and_source_script "install_common_software.sh"
 download_and_source_script "install_developer_tools.sh"

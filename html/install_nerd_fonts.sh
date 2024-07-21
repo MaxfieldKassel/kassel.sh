@@ -7,7 +7,7 @@ install_nerd_fonts() {
     local font_url="https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/Inconsolata/Regular/InconsolataNerdFont-Regular.ttf"
     local font_dir="$HOME/.local/share/fonts"
 
-    echo -e "${YELLOW}Installing $font Nerd Font...${NC}"
+    echo -e "${CYAN}Installing $font Nerd Font...${NC}"
 
     mkdir -p "$font_dir"
     curl -fLo "$font_dir/InconsolataNerdFont-Regular.ttf" "$font_url" >"$temp_file" 2>&1 &
@@ -27,7 +27,7 @@ install_nerd_fonts() {
 # Function to set Nerd Fonts for the terminal
 set_nerd_fonts_terminal() {
     local font_name="Inconsolata Nerd Font"
-    echo -e "${YELLOW}Setting $font_name for the terminal...${NC}"
+    echo -e "${CYAN}Setting $font_name for the terminal...${NC}"
     if [[ "$OSTYPE" == "darwin"* ]]; then
         defaults write com.apple.Terminal "Default Window Settings" -string "$font_name"
         defaults write com.apple.Terminal "Startup Window Settings" -string "$font_name"

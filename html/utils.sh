@@ -28,9 +28,32 @@ ask() {
     done
 }
 
+# Function to show a loading spinner with custom text
+spinner() {
+    local pid=$1
+    local text=$2
+    local delay=0.1
+    local spinstr='/-\|'
+    printf " [ ] ${text}... "
+    while ps -p $pid >/dev/null; do
+        local temp=${spinstr#?}
+        printf "\r [%c] ${text}... " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+    done
+    wait $pid
+    local status=$?
+    if [ $status -eq 0 ]; then
+        printf "\r [\e[32m✔\e[0m] ${text}...\n"
+    else
+        printf "\r [\e[31m✖\e[0m] ${text}...\n"
+    fi
+}
+
+
 # Request sudo permissions at the start
 request_sudo() {
-    echo -e "${YELLOW}Requesting sudo permissions...${NC}"
+    echo -e "${BLUE}Requesting sudo permissions...${NC}"
     sudo -v
     if [ $? -ne 0 ]; then
         echo -e "${RED}Sudo permissions are required to run this script.${NC}"
@@ -48,9 +71,9 @@ check_and_install_utilities() {
     done
 
     if [ ${#missing_utils[@]} -ne 0 ]; then
-        echo -e "${YELLOW}The following utilities are missing: ${missing_utils[*]}${NC}"
+        echo -e "${BLUE}The following utilities are missing: ${missing_utils[*]}${NC}"
         if ask "Do you want to install them?"; then
-            echo -e "${YELLOW}Installing missing utilities...${NC}"
+            echo -e "${CYAN}Installing missing utilities...${NC}"
             if command -v apt-get &>/dev/null; then
                 sudo apt install -y ${missing_utils[*]} >"$temp_file" 2>&1 &
                 spinner $! "Installing missing utilities (apt)"

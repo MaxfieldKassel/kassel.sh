@@ -2,7 +2,7 @@
 
 # Function to update package lists
 update_package_lists() {
-    echo -e "${YELLOW}Updating package lists...${NC}"
+    echo -e "${CYAN}Updating package lists...${NC}"
     if command -v apt-get &>/dev/null; then
         sudo apt update >"$temp_file" 2>&1 &
         spinner $! "Updating package lists (apt)"
@@ -26,7 +26,7 @@ update_package_lists() {
 
 # Function to upgrade packages
 upgrade_packages() {
-    echo -e "${YELLOW}Upgrading packages...${NC}"
+    echo -e "${CYAN}Upgrading packages...${NC}"
     if command -v apt-get &>/dev/null; then
         sudo apt upgrade -y >"$temp_file" 2>&1 &
         spinner $! "Upgrading packages (apt)"
