@@ -33,8 +33,8 @@ install_nerd_font() {
 
 # Function to install and set the console font
 install_and_set_console_font() {
-    local font_url="https://github.com/xeechou/Inconsolata-psf/raw/master/Inconsolata-32r.psf"
-    local font_path="/usr/share/consolefonts/Inconsolata-32r.psf"
+    local font_url="https://github.com/xeechou/Inconsolata-psf/raw/master/Inconsolata-16r.psf"
+    local font_path="/usr/share/consolefonts/Inconsolata-16r.psf"
 
     echo -e "${CYAN}Installing Inconsolata font for the console...${NC}"
 
@@ -46,7 +46,7 @@ install_and_set_console_font() {
 
     sudo bash -c "echo 'FONT=$font_path' > /etc/default/console-setup"
     sudo bash -c "echo 'FONTFACE=\"Inconsolata\"' >> /etc/default/console-setup"
-    sudo bash -c "echo 'FONTSIZE=\"32\"' >> /etc/default/console-setup"
+    sudo bash -c "echo 'FONTSIZE=\"16\"' >> /etc/default/console-setup"
 
     sudo update-initramfs -u >"$temp_file" 2>&1 &
     spinner $! "Updating initramfs"
