@@ -4,16 +4,27 @@ BASE_URL="https://kassel.sh"
 
 DEBUG=false
 
+# The reason for this function is that some operating systems
+# do not support sourcing a script directly from a URL. This
+# function downloads the script to a temporary file, sources it,
 download_and_source_script() {
-  local script_name=$1
-  source <(curl -s "$BASE_URL/$script_name")
-  if [ $? -ne 0 ]; then
-    echo -e "${RED}Failed to download $script_name. Exiting...${NC}"
-    exit 1
-  fi
-  log_debug "Downloaded $script_name"
+    local script_name=$1
+    local temp_script=$(mktemp)
+    curl -s "$BASE_URL/$script_name" -o "$temp_script"
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Failed to download $script_name. Exiting...${NC}"
+        rm "$temp_script"
+        exit 1
+    fi
+    source "$temp_script"
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Failed to source $script_name. Exiting...${NC}"
+        rm "$temp_script"
+        exit 1
+    fi
+    rm "$temp_script"
+    log_message "Downloaded and sourced $script_name"
 }
-
 # Parse options
 while getopts ":ad" opt; do
   case $opt in
