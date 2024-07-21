@@ -7,6 +7,10 @@ DEBUG=false
 download_and_source_script() {
     local script_name=$1
     source <(curl -s "$BASE_URL/$script_name")
+    if [ $? -ne 0 ]; then
+        echo -e "${RED}Failed to download $script_name. Exiting...${NC}"
+        exit 1
+    fi
     log "Downloaded $script_name"
 }
 
@@ -30,7 +34,7 @@ done
 download_and_source_script "utils.sh"
 download_and_source_script "install_common_software.sh"
 download_and_source_script "install_developer_tools.sh"
-download_and_source_script "install_nerd_fonts.sh"
+download_and_source_script "install_font.sh"
 download_and_source_script "install_shell_tools.sh"
 download_and_source_script "update_and_upgrade.sh"
 
