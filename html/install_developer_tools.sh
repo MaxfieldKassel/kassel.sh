@@ -23,6 +23,19 @@ install_macos_tools() {
         echo -e "${CYAN}Installing Homebrew...${NC}"
         NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" >"$temp_file" 2>&1 &
         spinner $! "Installing Homebrew"
+
+        # Adding Homebrew to ~/.bashrc
+        echo -e "${CYAN}Adding Homebrew to ~/.bashrc...${NC}"
+        {
+            echo ''
+            echo '# Set PATH, MANPATH, etc., for Homebrew.'
+            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+        } >>~/.bashrc
+
+        # Source ~/.bashrc
+        echo -e "${CYAN}Sourcing ~/.bashrc...${NC}"
+        source ~/.bashrc
+
     else
         echo -e "${CYAN}Homebrew already installed.${NC}"
     fi
