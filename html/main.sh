@@ -1,8 +1,25 @@
 #!/bin/bash
 
-source "$(dirname "$0")/utils.sh"
-source "$(dirname "$0")/spinner.sh"
+BASE_URL="https://kassel.sh"
 
+download_and_source_script() {
+  local script_name=$1
+  local temp_file=$(mktemp)
+  curl -sSL "$BASE_URL/$script_name" -o "$temp_file"
+  source "$temp_file"
+  rm -f "$temp_file"
+}
+
+# Download and source the scripts
+download_and_source_script "spinner.sh"
+download_and_source_script "utils.sh"
+download_and_source_script "install_common_software.sh"
+download_and_source_script "install_developer_tools.sh"
+download_and_source_script "install_nerd_fonts.sh"
+download_and_source_script "install_shell_tools.sh"
+download_and_source_script "update_and_upgrade.sh"
+
+# Main script
 AUTO=false
 while getopts ":a" opt; do
   case $opt in
@@ -19,24 +36,44 @@ done
 # Create a temporary file for command output
 temp_file=$(mktemp)
 
+# Request sudo permissions
+request_sudo
+
 # Check and install necessary utilities
-source "$(dirname "$0")/utils.sh"
 check_and_install_utilities
 
-# Update package lists and upgrade if confirmed
-source "$(dirname "$0")/update_and_upgrade.sh"
+# Update package lists
+update_package_lists
+
+# Ask for upgrade
+if ask "Do you want to upgrade all packages?"; then
+  upgrade_packages
+fi
 
 # Install developer tools and Homebrew on macOS if needed
-source "$(dirname "$0")/install_developer_tools.sh"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  install_macos_tools
+fi
 
-# Install shell tools (oh-my-zsh or oh-my-bash)
-source "$(dirname "$0")/install_shell_tools.sh"
+# Detect current shell
+current_shell=$(basename "$SHELL")
+
+if [[ "$current_shell" == "zsh" ]]; then
+  install_oh_my_zsh
+elif [[ "$current_shell" == "bash" ]]; then
+  install_oh_my_bash
+else
+  echo -e "${RED}Unsupported shell: $current_shell. Exiting...${NC}"
+  rm "$temp_file"
+  exit 1
+fi
 
 # Install common software
-source "$(dirname "$0")/install_common_software.sh"
+install_software
 
 # Install Nerd Fonts and set for terminal
-source "$(dirname "$0")/install_nerd_fonts.sh"
+install_nerd_fonts
+set_nerd_fonts_terminal
 
 # Check if the previous commands were successful
 if [ $? -eq 0 ]; then
