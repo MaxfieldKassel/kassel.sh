@@ -35,11 +35,11 @@ Kassel.sh provides a convenient setup script for Linux and macOS environments, a
 1. Download and run the script with a one-liner:
 
    ```bash
-   curl -sSL http://localhost:8080 | bash
+   bash -c "$(curl -sSL http://localhost:8080)"
    ```
 
 2. For automatic mode, use the -a flag:
 
     ```bash
-    curl -sSL http://localhost:8080 | bash -s -- -a
+    bash -c "$(curl -sSL http://localhost:8080)" -a
     ```
