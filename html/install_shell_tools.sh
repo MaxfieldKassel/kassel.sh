@@ -103,15 +103,7 @@ install_oh_my_bash() {
         fi
     fi
 
-    if grep -q "source $HOME/.grc.sh" "$HOME/.bashrc"; then
-        if ask "Configuration for grc aliases already exists. Do you want to back it up?"; then
-            cp "$HOME/.bashrc" "$HOME/.bashrc.bak"
-            echo -e "${CYAN}Backup created at $HOME/.bashrc.bak.${NC}"
-        fi
-    fi
-
     echo 'source /usr/share/bash-completion/bash_completion' >>~/.bashrc
-    configure_grc_aliases "$HOME/.bashrc"
 
     echo -e "${CYAN}Enabled bash-completion and grc for oh-my-bash.${NC}"
 }
