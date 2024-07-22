@@ -74,6 +74,9 @@ if ask "Do you want to upgrade all packages?"; then
   upgrade_packages
 fi
 
+log_debug "Installing common software"
+install_software
+
 log_debug "Detecting current shell"
 current_shell=$(basename "$SHELL")
 
@@ -88,9 +91,6 @@ else
   rm "$temp_file"
   exit 1
 fi
-
-log_debug "Installing common software"
-install_software
 
 log_debug "Installing font"
 install_and_set_font
