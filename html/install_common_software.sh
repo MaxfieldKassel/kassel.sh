@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-COMMON_SOFTWARE="git neovim curl wget htop"
+COMMON_SOFTWARE="git neovim curl wget htop fzf git-lfs tree jq unzip zip"
 
 # Add util functions if not already defined
 if ! declare -f spinner &>/dev/null; then
