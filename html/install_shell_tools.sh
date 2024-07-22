@@ -52,7 +52,7 @@ install_oh_my_zsh() {
 
 # Function to install bash-completion
 install_bash_completion() {
-    if ! command -v bash-completion &>/dev/null; then
+    if ! dpkg -l | grep -qw bash-completion; then
         echo -e "${CYAN}Installing bash-completion...${NC}"
         sudo apt-get install -y bash-completion >"$temp_file" 2>&1 &
         spinner $! "Installing bash-completion"
@@ -81,7 +81,6 @@ install_grc() {
         echo "source $HOME/.grc.sh" >> "$HOME/.bashrc"
     fi
 }
-
 
 # Function to install oh-my-bash
 install_oh_my_bash() {
