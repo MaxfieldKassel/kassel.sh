@@ -31,18 +31,18 @@ fi
 install_macos_tools() {
     log_info "Checking for Xcode command line tools..."
     if ! xcode-select -p &>/dev/null; then
-        log_info "Installing Xcode command line tools..."
-        xcode-select --install
+        (xcode-select --install &)
+        spinner_pid=$!
         while ! xcode-select -p &>/dev/null; do
             sleep 5
-        done
+        done &
+        spinner $spinner_pid "Installing Xcode command line tools"
     else
         log_info "Xcode command line tools already installed."
     fi
 
     log_info "Checking for Homebrew..."
     if ! command -v brew &>/dev/null; then
-        log_info "Installing Homebrew..."
         NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" >"$temp_file" 2>&1 &
         spinner $! "Installing Homebrew"
 

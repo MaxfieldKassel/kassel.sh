@@ -30,7 +30,6 @@ fi
 # Function to update package lists
 update_package_lists() {
     log_debug "Starting update_package_lists function"
-    log_info "Updating package lists..."
     if command -v apt-get &>/dev/null; then
         sudo apt update >"$temp_file" 2>&1 &
         spinner $! "Updating package lists (apt)"

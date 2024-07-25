@@ -64,7 +64,6 @@ install_and_set_terminal_font() {
     spinner $! "Refreshing font cache"
 
     local font_name="Hack Nerd Font"
-    log_info "Setting $font_name for the terminal..."
     if [[ "$OSTYPE" == "darwin"* ]]; then
         defaults write com.apple.Terminal "Default Window Settings" -string "$font_name"
         defaults write com.apple.Terminal "Startup Window Settings" -string "$font_name" >"$temp_file" 2>&1 &

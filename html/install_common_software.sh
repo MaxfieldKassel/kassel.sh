@@ -31,7 +31,6 @@ fi
 
 # Function to install common software
 install_software() {
-    log_info "Installing common software..."
     if command -v apt-get &>/dev/null; then
         sudo apt install -y $COMMON_SOFTWARE >"$temp_file" 2>&1 &
         spinner $! "Installing common software (apt)"

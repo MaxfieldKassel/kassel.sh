@@ -32,7 +32,6 @@ install_zsh_autosuggestions() {
     if [ -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
         log_info "zsh-autosuggestions is already installed."
     else
-        log_info "Installing zsh-autosuggestions..."
         git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" >"$temp_file" 2>&1 &
         spinner $! "Installing zsh-autosuggestions"
     fi
@@ -43,7 +42,6 @@ install_zsh_syntax_highlighting() {
     if [ -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
         log_info "zsh-syntax-highlighting is already installed."
     else
-        log_info "Installing zsh-syntax-highlighting..."
         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" >"$temp_file" 2>&1 &
         spinner $! "Installing zsh-syntax-highlighting"
     fi
@@ -54,7 +52,6 @@ install_powerlevel10k() {
     if [ -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
         log_info "Powerlevel10k is already installed."
     else
-        log_info "Installing Powerlevel10k..."
         git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" >"$temp_file" 2>&1 &
         spinner $! "Installing Powerlevel10k"
     fi
@@ -94,7 +91,6 @@ install_oh_my_zsh() {
     if [ -d "$HOME/.oh-my-zsh" ]; then
         log_info "oh-my-zsh is already installed."
     else
-        log_info "Installing oh-my-zsh..."
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" >"$temp_file" 2>&1 &
         spinner $! "Installing oh-my-zsh"
     fi
@@ -114,7 +110,6 @@ install_oh_my_zsh() {
 # Function to install bash-completion
 install_bash_completion() {
     if ! dpkg -l | grep -qw bash-completion; then
-        log_info "Installing bash-completion..."
         sudo apt-get install -y bash-completion >"$temp_file" 2>&1 &
         spinner $! "Installing bash-completion"
     else
@@ -125,7 +120,6 @@ install_bash_completion() {
 # Function to install grc using the automated script
 install_grc() {
     if ! command -v grc &>/dev/null; then
-        log_info "Installing grc..."
         bash -c "$(curl -fsSL https://github.com/garabik/grc/raw/master/grc.sh)" >"$temp_file" 2>&1 &
         spinner $! "Installing grc"
     else
@@ -159,7 +153,6 @@ install_oh_my_bash() {
     if [ -d "$HOME/.oh-my-bash" ]; then
         log_info "oh-my-bash is already installed."
     else
-        log_info "Installing oh-my-bash..."
         bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" >"$temp_file" 2>&1 &
         spinner $! "Installing oh-my-bash"
     fi
@@ -183,7 +176,6 @@ install_oh_my_bash() {
 
 # Function to install zsh
 install_zsh() {
-    log_info "Installing zsh..."
     if command -v apt-get &>/dev/null; then
         sudo apt install -y zsh >"$temp_file" 2>&1 &
         spinner $! "Installing zsh (apt)"
