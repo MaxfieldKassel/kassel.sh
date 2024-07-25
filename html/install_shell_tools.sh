@@ -50,6 +50,19 @@ install_oh_my_zsh() {
     echo -e "${CYAN}Enabled git, zsh-autosuggestions, and zsh-syntax-highlighting plugins for oh-my-zsh.${NC}"
 }
 
+# Function to install Powerlevel10k
+install_powerlevel10k() {
+    if [ -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
+        echo -e "${CYAN}Powerlevel10k is already installed.${NC}"
+    else
+        echo -e "${CYAN}Installing Powerlevel10k...${NC}"
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom/themes/powerlevel10k >"$temp_file" 2>&1 &
+        spinner $! "Installing Powerlevel10k"
+    fi
+    sed -i 's|ZSH_THEME=".*"|ZSH_THEME="powerlevel10k/powerlevel10k"|' "$HOME/.zshrc"
+    echo -e "${CYAN}Enabled Powerlevel10k theme for oh-my-zsh.${NC}"
+}
+
 # Function to install bash-completion
 install_bash_completion() {
     if ! dpkg -l | grep -qw bash-completion; then
@@ -107,13 +120,28 @@ install_oh_my_bash() {
     echo -e "${CYAN}Enabled bash-completion and grc for oh-my-bash.${NC}"
 }
 
+# Function to install Powerbash10k
+install_powerbash10k() {
+    if [ -d "$HOME/.oh-my-bash/custom/themes/powerbash10k" ]; then
+        echo -e "${CYAN}Powerbash10k is already installed.${NC}"
+    else
+        echo -e "${CYAN}Installing Powerbash10k...${NC}"
+        git clone --depth=1 https://github.com/Amar1729/powerbash10k.git $HOME/.oh-my-bash/custom/themes/powerbash10k >"$temp_file" 2>&1 &
+        spinner $! "Installing Powerbash10k"
+    fi
+    sed -i 's|OSH_THEME=".*"|OSH_THEME="powerbash10k/powerbash10k"|' "$HOME/.bashrc"
+    echo -e "${CYAN}Enabled Powerbash10k theme for oh-my-bash.${NC}"
+}
+
 install_shell_tools() {
     current_shell=$(basename "$SHELL")
 
     if [[ "$current_shell" == "zsh" ]]; then
         install_oh_my_zsh
+        install_powerlevel10k
     elif [[ "$current_shell" == "bash" ]]; then
         install_oh_my_bash
+        install_powerbash10k
     else
         echo -e "${RED}Unsupported shell: $current_shell. Exiting...${NC}"
         exit 1
