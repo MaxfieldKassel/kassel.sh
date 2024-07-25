@@ -108,7 +108,7 @@ update_and_upgrade() {
     if [[ "$package_count" -eq 0 ]]; then
         log_info "No packages to upgrade."
     else
-        log_info "$package_count packages need upgrading."
+        print_message "$package_count packages need upgrading."
         if ask "Do you want to upgrade all packages?"; then
             upgrade_packages
         fi
