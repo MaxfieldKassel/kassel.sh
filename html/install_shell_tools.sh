@@ -56,7 +56,11 @@ install_powerlevel10k() {
         spinner $! "Installing Powerlevel10k"
     fi
     if ! grep -q 'ZSH_THEME="powerlevel10k/powerlevel10k"' "$HOME/.zshrc"; then
-        sed -i '' 's|ZSH_THEME=".*"|ZSH_THEME="powerlevel10k/powerlevel10k"|' "$HOME/.zshrc"
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' 's|ZSH_THEME=".*"|ZSH_THEME="powerlevel10k/powerlevel10k"|' "$HOME/.zshrc"
+        else
+            sed -i 's|ZSH_THEME=".*"|ZSH_THEME="powerlevel10k/powerlevel10k"|' "$HOME/.zshrc"
+        fi
         log_info "Enabled Powerlevel10k theme for oh-my-zsh."
     else
         log_info "Powerlevel10k theme is already enabled."
@@ -100,7 +104,11 @@ install_oh_my_zsh() {
     install_powerlevel10k
     
     if ! grep -q "zsh-autosuggestions" "$HOME/.zshrc"; then
-        sed -i '' 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
+        else
+            sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
+        fi
         log_info "Enabled git, zsh-autosuggestions, and zsh-syntax-highlighting plugins for oh-my-zsh."
     else
         log_info "Plugins already configured in .zshrc."
@@ -148,7 +156,11 @@ install_grc() {
 configure_powerbash10k() {
     if ! grep -q 'OSH_THEME="powerbash10k/powerbash10k"' "$HOME/.bashrc"; then
         log_info "Configuring Powerbash10k theme for Oh-My-Bash..."
-        sed -i '' 's|OSH_THEME=".*"|OSH_THEME="powerbash10k"|' "$HOME/.bashrc"
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            sed -i '' 's|OSH_THEME=".*"|OSH_THEME="powerbash10k"|' "$HOME/.bashrc"
+        else
+            sed -i 's|OSH_THEME=".*"|OSH_THEME="powerbash10k"|' "$HOME/.bashrc"
+        fi
         log_info "Enabled Powerbash10k theme for Oh-My-Bash."
     else
         log_info "Powerbash10k theme is already enabled."
