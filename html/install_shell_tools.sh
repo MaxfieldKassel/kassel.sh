@@ -148,8 +148,42 @@ install_oh_my_bash() {
     echo -e "${CYAN}Enabled bash-completion and grc for oh-my-bash.${NC}"
 }
 
+# Function to install common software
+install_software() {
+    echo -e "${CYAN}Installing common software...${NC}"
+    if command -v apt-get &>/dev/null; then
+        sudo apt install -y zsh >"$temp_file" 2>&1 &
+        spinner $! "Installing common software (apt)"
+    elif command -v yum &>/dev/null; then
+        sudo yum install -y zsh >"$temp_file" 2>&1 &
+        spinner $! "Installing common software (yum)"
+    elif command -v apk &>/dev/null; then
+        sudo apk add zsh >"$temp_file" 2>&1 &
+        spinner $! "Installing common software (apk)"
+    elif command -v nix-env &>/dev/null; then
+        nix-env -iA nixpkgs.${COMMON_SOFTWARE// / nixpkgs.} >"$temp_file" 2>&1 &
+        spinner $! "Installing common software (nix)"
+    elif command -v brew &>/dev/null; then
+        brew install zsh >"$temp_file" 2>&1 &
+        spinner $! "Installing common software (brew)"
+    else
+        echo -e "${RED}No supported package manager found. Exiting...${NC}"
+        exit 1
+    fi
+}
+
 install_shell_tools() {
     current_shell=$(basename "$SHELL")
+
+    # if the current shell is bash ask if the user wants to switch to zsh
+    if [[ "$current_shell" == "bash" ]]; then
+        if ask "Do you want to switch to zsh?"; then
+            # Change the default shell to zsh
+
+            chsh -s $(which zsh)
+            current_shell="zsh"
+        fi
+    fi
 
     if [[ "$current_shell" == "zsh" ]]; then
         install_oh_my_zsh
