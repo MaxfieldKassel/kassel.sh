@@ -194,9 +194,9 @@ install_shell_tools() {
     log_debug "Current shell: $current_shell"
     # if the current shell is bash ask if the user wants to switch to zsh
     if [[ "$current_shell" == "bash" ]]; then
-        install_zsh
         if ask "Do you want to switch to zsh?"; then
             # Change the default shell to zsh
+            install_zsh
             chsh -s $(which zsh)
             current_shell="zsh"
         fi
