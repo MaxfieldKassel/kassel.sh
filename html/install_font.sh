@@ -27,8 +27,8 @@ if ! declare -f spinner &>/dev/null; then
     download_and_source_script "utils.sh"
 fi
 
-# Function to install and set the terminal font
-install_and_set_terminal_font() {
+# Function to download the terminal font
+download_terminal_font() {
     local font="Hack Nerd Font"
     local font_dir
     local font_file
@@ -41,19 +41,12 @@ install_and_set_terminal_font() {
         font_file="$font_dir/Hack Regular Nerd Font Complete.ttf"
     fi
 
-    # If font file exists and installed, skip
     if [[ -f "$font_file" ]]; then
-        if [[ "$OSTYPE" == "darwin"* ]]; then
-            log_info "$font is already installed in $font_dir. Skipping..."
-        else
-            if [[ $(fc-list | grep -c "$font") -gt 0 ]]; then
-                log_info "$font is already installed. Skipping..."
-                return 0
-            fi
-        fi
+        log_info "$font is already downloaded. Skipping download..."
+        return 0
     fi
 
-    log_info "Installing $font..."
+    log_info "Downloading $font..."
 
     mkdir -p "$font_dir"
     local font_urls=(
@@ -79,19 +72,40 @@ install_and_set_terminal_font() {
         fc-cache -fv >"$temp_file" 2>&1 &
         spinner $! "Refreshing font cache"
     fi
+}
 
+# Function to set the terminal font
+set_terminal_font() {
+    local font="Hack Nerd Font"
     local font_name="Hack Nerd Font"
+    
     if [[ "$OSTYPE" == "darwin"* ]]; then
+        if defaults read com.apple.Terminal "Default Window Settings" | grep -q "$font_name"; then
+            log_info "$font is already set for Terminal. Skipping..."
+            return 0
+        fi
+        log_info "Setting $font for Terminal..."
         defaults write com.apple.Terminal "Default Window Settings" -string "$font_name"
         defaults write com.apple.Terminal "Startup Window Settings" -string "$font_name" >"$temp_file" 2>&1 &
         spinner $! "Setting $font_name for Terminal"
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        if gsettings get org.gnome.desktop.interface monospace-font-name | grep -q "$font_name"; then
+            log_info "$font is already set for GNOME Terminal. Skipping..."
+            return 0
+        fi
+        log_info "Setting $font for GNOME Terminal..."
         gsettings set org.gnome.desktop.interface monospace-font-name "$font_name 11" >"$temp_file" 2>&1 &
         spinner $! "Setting $font_name for GNOME Terminal"
     fi
 }
 
-# Function to install and set the console font
+# Function to download and set the terminal font
+install_and_set_terminal_font() {
+    download_terminal_font
+    set_terminal_font
+}
+
+# Function to download and set the console font
 install_and_set_console_font() {
     local font_url="https://github.com/slavfox/Cozette/releases/download/v.1.24.1/cozette_hidpi.psf"
     local font_path="/usr/share/consolefonts/cozette_hidpi.psf"
