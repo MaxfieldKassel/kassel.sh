@@ -42,7 +42,7 @@ ask() {
         return 0
     fi
     while true; do
-        print_message "$prompt (y/n): "
+        echo -n "${BLUE}$prompt [y/n]: ${NC}"
         read -r answer
         case "$answer" in
         [yY]) return 0 ;;

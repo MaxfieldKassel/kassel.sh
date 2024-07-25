@@ -76,7 +76,6 @@ count_upgradable_packages() {
 # Function to upgrade packages
 upgrade_packages() {
     log_debug "Starting upgrade_packages function"
-    log_info "Upgrading packages..."
     if command -v apt-get &>/dev/null; then
         sudo apt upgrade -y >"$temp_file" 2>&1 &
         spinner $! "Upgrading packages (apt)"
