@@ -30,12 +30,27 @@ fi
 # Function to install and set the terminal font
 install_and_set_terminal_font() {
     local font="Hack Nerd Font"
-    local font_dir="$HOME/.local/share/fonts"
-    local font_file="$font_dir/Hack Regular Nerd Font Complete.ttf"
+    local font_dir
+    local font_file
 
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        font_dir="$HOME/Library/Fonts"
+        font_file="$font_dir/Hack Regular Nerd Font Complete.ttf"
+    else
+        font_dir="$HOME/.local/share/fonts"
+        font_file="$font_dir/Hack Regular Nerd Font Complete.ttf"
+    fi
+
+    # If font file exists and installed, skip
     if [[ -f "$font_file" ]]; then
-        log_info "$font is already installed. Skipping..."
-        return 0
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            log_info "$font is already installed in $font_dir. Skipping..."
+        else
+            if [[ $(fc-list | grep -c "$font") -gt 0 ]]; then
+                log_info "$font is already installed. Skipping..."
+                return 0
+            fi
+        fi
     fi
 
     log_info "Installing $font..."
@@ -59,9 +74,11 @@ install_and_set_terminal_font() {
         spinner $! "Removing Windows compatible fonts"
     done
 
-    # Refresh font cache
-    fc-cache -fv >"$temp_file" 2>&1 &
-    spinner $! "Refreshing font cache"
+    if [[ "$OSTYPE" != "darwin"* ]]; then
+        # Refresh font cache for Linux
+        fc-cache -fv >"$temp_file" 2>&1 &
+        spinner $! "Refreshing font cache"
+    fi
 
     local font_name="Hack Nerd Font"
     if [[ "$OSTYPE" == "darwin"* ]]; then
