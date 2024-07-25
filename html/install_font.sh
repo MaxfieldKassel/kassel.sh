@@ -2,21 +2,19 @@
 
 BASE_URL="https://kassel.sh"
 
-# The reason for this function is that some operating systems
-# do not support sourcing a script directly from a URL. This
-# function downloads the script to a temporary file, sources it,
+# Function to download and source a script
 download_and_source_script() {
     local script_name=$1
     local temp_script=$(mktemp)
     curl -s "$BASE_URL/$script_name" -o "$temp_script"
     if [ $? -ne 0 ]; then
-        echo -e "${RED}Failed to download $script_name. Exiting...${NC}"
+        log_error "Failed to download $script_name. Exiting..."
         rm "$temp_script"
         exit 1
     fi
     source "$temp_script"
     if [ $? -ne 0 ]; then
-        echo -e "${RED}Failed to source $script_name. Exiting...${NC}"
+        log_error "Failed to source $script_name. Exiting..."
         rm "$temp_script"
         exit 1
     fi
@@ -36,11 +34,11 @@ install_and_set_terminal_font() {
     local font_file="$font_dir/Hack Regular Nerd Font Complete.ttf"
 
     if [[ -f "$font_file" ]]; then
-        echo -e "${CYAN}$font is already installed. Skipping...${NC}"
+        log_info "$font is already installed. Skipping..."
         return 0
     fi
 
-    echo -e "${CYAN}Installing $font...${NC}"
+    log_info "Installing $font..."
 
     mkdir -p "$font_dir"
     local font_urls=(
@@ -56,7 +54,7 @@ install_and_set_terminal_font() {
         spinner $! "Extracting $font"
         rm "$temp_zip"
 
-        # Remove all windows compatible fonts
+        # Remove all Windows compatible fonts
         find "$font_dir" -type f -name "*Windows Compatible*" -delete >"$temp_file" 2>&1 &
         spinner $! "Removing Windows compatible fonts"
     done
@@ -66,7 +64,7 @@ install_and_set_terminal_font() {
     spinner $! "Refreshing font cache"
 
     local font_name="Hack Nerd Font"
-    echo -e "${CYAN}Setting $font_name for the terminal...${NC}"
+    log_info "Setting $font_name for the terminal..."
     if [[ "$OSTYPE" == "darwin"* ]]; then
         defaults write com.apple.Terminal "Default Window Settings" -string "$font_name"
         defaults write com.apple.Terminal "Startup Window Settings" -string "$font_name" >"$temp_file" 2>&1 &
@@ -77,27 +75,24 @@ install_and_set_terminal_font() {
     fi
 }
 
-# This function uses the Cozette font for the console,
-# which is a patched version of the Cozette font, which
-# has symbols for powerline and other icons. The font
-# is downloaded from the official GitHub release page.
+# Function to install and set the console font
 install_and_set_console_font() {
     local font_url="https://github.com/slavfox/Cozette/releases/download/v.1.24.1/cozette_hidpi.psf"
     local font_path="/usr/share/consolefonts/cozette_hidpi.psf"
     local temp_file=$(mktemp)
 
     if [[ -f "$font_path" ]]; then
-        echo -e "${CYAN}Cozette font is already installed. Skipping...${NC}"
+        log_info "Cozette font is already installed. Skipping..."
         return 0
     fi
 
-    echo -e "${CYAN}Installing Cozette font for the console...${NC}"
+    log_info "Installing Cozette font for the console..."
 
     sudo mkdir -p /usr/share/consolefonts
     sudo curl -fLo "$font_path" "$font_url" >"$temp_file" 2>&1 &
     spinner $! "Downloading Cozette console font"
 
-    echo -e "${CYAN}Setting Cozette font for the console...${NC}"
+    log_info "Setting Cozette font for the console..."
 
     sudo bash -c "echo 'FONT=$font_path' > /etc/default/console-setup"
     sudo bash -c "echo 'FONTFACE=\"Cozette\"' >> /etc/default/console-setup"
@@ -107,7 +102,7 @@ install_and_set_console_font() {
     spinner $! "Updating initramfs"
 }
 
-# Function to install and set font
+# Function to install and set the font based on the environment
 install_and_set_font() {
     is_headless
     if [[ $? -eq 1 ]]; then
@@ -119,10 +114,10 @@ install_and_set_font() {
     fi
 }
 
-# Check if script is being executed or sourced
+# Check if the script is being executed or sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     DEBUG=false
-    # create a temporary file
+    # Create a temporary file
     temp_file=$(mktemp)
 
     install_and_set_font

@@ -1,17 +1,39 @@
 #!/usr/bin/env bash
 
+BASE_URL="https://kassel.sh"
+
+# Function to download and source a script
+download_and_source_script() {
+    local script_name=$1
+    local temp_script=$(mktemp)
+    curl -s "$BASE_URL/$script_name" -o "$temp_script"
+    if [ $? -ne 0 ]; then
+        log_error "Failed to download $script_name. Exiting..."
+        rm "$temp_script"
+        exit 1
+    fi
+    source "$temp_script"
+    if [ $? -ne 0 ]; then
+        log_error "Failed to source $script_name. Exiting..."
+        rm "$temp_script"
+        exit 1
+    fi
+    rm "$temp_script"
+    log_debug "Downloaded and sourced $script_name"
+}
+
 # Add util functions if not already defined
 if ! declare -f spinner &>/dev/null; then
-    source <(curl -s "https://kassel.sh/utils.sh")
+    download_and_source_script "utils.sh"
 fi
 
 # Function to install zsh-autosuggestions
 install_zsh_autosuggestions() {
     if [ -d "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
-        echo -e "${CYAN}zsh-autosuggestions is already installed.${NC}"
+        log_info "zsh-autosuggestions is already installed."
     else
-        echo -e "${CYAN}Installing zsh-autosuggestions...${NC}"
-        git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions >"$temp_file" 2>&1 &
+        log_info "Installing zsh-autosuggestions..."
+        git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions" >"$temp_file" 2>&1 &
         spinner $! "Installing zsh-autosuggestions"
     fi
 }
@@ -19,10 +41,10 @@ install_zsh_autosuggestions() {
 # Function to install zsh-syntax-highlighting
 install_zsh_syntax_highlighting() {
     if [ -d "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
-        echo -e "${CYAN}zsh-syntax-highlighting is already installed.${NC}"
+        log_info "zsh-syntax-highlighting is already installed."
     else
-        echo -e "${CYAN}Installing zsh-syntax-highlighting...${NC}"
-        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting >"$temp_file" 2>&1 &
+        log_info "Installing zsh-syntax-highlighting..."
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" >"$temp_file" 2>&1 &
         spinner $! "Installing zsh-syntax-highlighting"
     fi
 }
@@ -30,17 +52,17 @@ install_zsh_syntax_highlighting() {
 # Function to install Powerlevel10k
 install_powerlevel10k() {
     if [ -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
-        echo -e "${CYAN}Powerlevel10k is already installed.${NC}"
+        log_info "Powerlevel10k is already installed."
     else
-        echo -e "${CYAN}Installing Powerlevel10k...${NC}"
-        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom/themes/powerlevel10k >"$temp_file" 2>&1 &
+        log_info "Installing Powerlevel10k..."
+        git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" >"$temp_file" 2>&1 &
         spinner $! "Installing Powerlevel10k"
     fi
     if ! grep -q 'ZSH_THEME="powerlevel10k/powerlevel10k"' "$HOME/.zshrc"; then
         sed -i 's|ZSH_THEME=".*"|ZSH_THEME="powerlevel10k/powerlevel10k"|' "$HOME/.zshrc"
-        echo -e "${CYAN}Enabled Powerlevel10k theme for oh-my-zsh.${NC}"
+        log_info "Enabled Powerlevel10k theme for oh-my-zsh."
     else
-        echo -e "${CYAN}Powerlevel10k theme is already enabled.${NC}"
+        log_info "Powerlevel10k theme is already enabled."
     fi
 
     if [ -f "$HOME/.p10k.zsh" ]; then
@@ -70,9 +92,9 @@ install_powerlevel10k() {
 # Function to install oh-my-zsh
 install_oh_my_zsh() {
     if [ -d "$HOME/.oh-my-zsh" ]; then
-        echo -e "${CYAN}oh-my-zsh is already installed.${NC}"
+        log_info "oh-my-zsh is already installed."
     else
-        echo -e "${CYAN}Installing oh-my-zsh...${NC}"
+        log_info "Installing oh-my-zsh..."
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" >"$temp_file" 2>&1 &
         spinner $! "Installing oh-my-zsh"
     fi
@@ -83,31 +105,31 @@ install_oh_my_zsh() {
     
     if ! grep -q "zsh-autosuggestions" "$HOME/.zshrc"; then
         sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
-        echo -e "${CYAN}Enabled git, zsh-autosuggestions, and zsh-syntax-highlighting plugins for oh-my-zsh.${NC}"
+        log_info "Enabled git, zsh-autosuggestions, and zsh-syntax-highlighting plugins for oh-my-zsh."
     else
-        echo -e "${CYAN}Plugins already configured in .zshrc.${NC}"
+        log_info "Plugins already configured in .zshrc."
     fi
 }
 
 # Function to install bash-completion
 install_bash_completion() {
     if ! dpkg -l | grep -qw bash-completion; then
-        echo -e "${CYAN}Installing bash-completion...${NC}"
+        log_info "Installing bash-completion..."
         sudo apt-get install -y bash-completion >"$temp_file" 2>&1 &
         spinner $! "Installing bash-completion"
     else
-        echo -e "${CYAN}bash-completion is already installed.${NC}"
+        log_info "bash-completion is already installed."
     fi
 }
 
 # Function to install grc using the automated script
 install_grc() {
     if ! command -v grc &>/dev/null; then
-        echo -e "${CYAN}Installing grc...${NC}"
+        log_info "Installing grc..."
         bash -c "$(curl -fsSL https://github.com/garabik/grc/raw/master/grc.sh)" >"$temp_file" 2>&1 &
         spinner $! "Installing grc"
     else
-        echo -e "${CYAN}grc is already installed.${NC}"
+        log_info "grc is already installed."
         return 0
     fi
 
@@ -124,20 +146,20 @@ install_grc() {
 # Function to configure Powerbash10k for Oh-My-Bash
 configure_powerbash10k() {
     if ! grep -q 'OSH_THEME="powerbash10k/powerbash10k"' "$HOME/.bashrc"; then
-        echo -e "${CYAN}Configuring Powerbash10k theme for Oh-My-Bash...${NC}"
+        log_info "Configuring Powerbash10k theme for Oh-My-Bash..."
         sed -i 's|OSH_THEME=".*"|OSH_THEME="powerbash10k"|' "$HOME/.bashrc"
-        echo -e "${CYAN}Enabled Powerbash10k theme for Oh-My-Bash.${NC}"
+        log_info "Enabled Powerbash10k theme for Oh-My-Bash."
     else
-        echo -e "${CYAN}Powerbash10k theme is already enabled.${NC}"
+        log_info "Powerbash10k theme is already enabled."
     fi
 }
 
 # Function to install oh-my-bash
 install_oh_my_bash() {
     if [ -d "$HOME/.oh-my-bash" ]; then
-        echo -e "${CYAN}oh-my-bash is already installed.${NC}"
+        log_info "oh-my-bash is already installed."
     else
-        echo -e "${CYAN}Installing oh-my-bash...${NC}"
+        log_info "Installing oh-my-bash..."
         bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh)" >"$temp_file" 2>&1 &
         spinner $! "Installing oh-my-bash"
     fi
@@ -149,19 +171,19 @@ install_oh_my_bash() {
     if grep -q "source /usr/share/bash-completion/bash_completion" "$HOME/.bashrc"; then
         if ask "Configuration for bash-completion already exists. Do you want to back it up?"; then
             cp "$HOME/.bashrc" "$HOME/.bashrc.bak"
-            echo -e "${CYAN}Backup created at $HOME/.bashrc.bak.${NC}"
+            log_info "Backup created at $HOME/.bashrc.bak."
         fi
     fi
 
     if ! grep -q "bash_completion" "$HOME/.bashrc"; then
         echo 'source /usr/share/bash-completion/bash_completion' >>"$HOME/.bashrc"
     fi
-    echo -e "${CYAN}Enabled bash-completion and grc for oh-my-bash.${NC}"
+    log_info "Enabled bash-completion and grc for oh-my-bash."
 }
 
 # Function to install zsh
 install_zsh() {
-    echo -e "${CYAN}Installing zsh...${NC}"
+    log_info "Installing zsh..."
     if command -v apt-get &>/dev/null; then
         sudo apt install -y zsh >"$temp_file" 2>&1 &
         spinner $! "Installing zsh (apt)"
@@ -172,13 +194,13 @@ install_zsh() {
         sudo apk add zsh >"$temp_file" 2>&1 &
         spinner $! "Installing zsh (apk)"
     elif command -v nix-env &>/dev/null; then
-        nix-env -iA nixpkgs.${COMMON_SOFTWARE// / nixpkgs.} >"$temp_file" 2>&1 &
+        nix-env -iA nixpkgs.zsh >"$temp_file" 2>&1 &
         spinner $! "Installing zsh (nix)"
     elif command -v brew &>/dev/null; then
         brew install zsh >"$temp_file" 2>&1 &
         spinner $! "Installing zsh (brew)"
     else
-        echo -e "${RED}No supported package manager found. Exiting...${NC}"
+        log_error "No supported package manager found. Exiting..."
         exit 1
     fi
 }
@@ -201,13 +223,13 @@ install_shell_tools() {
     elif [[ "$current_shell" == "bash" ]]; then
         install_oh_my_bash
     else
-        echo -e "${RED}Unsupported shell: $current_shell. Exiting...${NC}"
+        log_error "Unsupported shell: $current_shell. Exiting..."
         exit 1
     fi
 }
 
 # Check if script is being executed or sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    $temp_file=$(mktemp)
+    temp_file=$(mktemp)
     install_shell_tools
 fi

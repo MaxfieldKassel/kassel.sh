@@ -4,21 +4,19 @@ BASE_URL="https://kassel.sh"
 
 DEBUG=true
 
-# The reason for this function is that some operating systems
-# do not support sourcing a script directly from a URL. This
-# function downloads the script to a temporary file, sources it,
+# Function to download and source a script
 download_and_source_script() {
   local script_name=$1
   local temp_script=$(mktemp)
   curl -s "$BASE_URL/$script_name" -o "$temp_script"
   if [ $? -ne 0 ]; then
-    echo -e "${RED}Failed to download $script_name. Exiting...${NC}"
+    log_error "Failed to download $script_name. Exiting..."
     rm "$temp_script"
     exit 1
   fi
   source "$temp_script"
   if [ $? -ne 0 ]; then
-    echo -e "${RED}Failed to source $script_name. Exiting...${NC}"
+    log_error "Failed to source $script_name. Exiting..."
     rm "$temp_script"
     exit 1
   fi
@@ -36,7 +34,7 @@ while getopts ":ad" opt; do
     DEBUG=true
     ;;
   \?)
-    echo "Invalid option: -$OPTARG" >&2
+    log_error "Invalid option: -$OPTARG"
     exit 1
     ;;
   esac
@@ -67,13 +65,7 @@ log_debug "Checking and installing necessary utilities"
 check_and_install_utilities
 
 log_debug "Updating package lists"
-update_package_lists
-
-log_debug "Asking for upgrade confirmation"
-if ask "Do you want to upgrade all packages?"; then
-  log_debug "Upgrading packages"
-  upgrade_packages
-fi
+update_and_upgrade
 
 log_debug "Installing common software"
 install_software
@@ -86,9 +78,9 @@ install_and_set_font
 
 # Check if the previous commands were successful
 if [ $? -eq 0 ]; then
-  echo -e "${GREEN}Setup complete!${NC}"
+  log_success "Setup complete!"
   # Don't remove the temp file if debug is enabled
   [ "$DEBUG" = true ] || rm "$temp_file"
 else
-  echo -e "${RED}An error occurred. Check the log_debug file for details: $temp_file${NC}"
+  log_error "An error occurred. Check the log_debug file for details: $temp_file"
 fi
