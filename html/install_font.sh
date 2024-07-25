@@ -76,30 +76,24 @@ download_terminal_font() {
 
 # Function to set the terminal font
 set_terminal_font() {
+    local font="Hack Nerd Font"
     local font_name="Hack Nerd Font"
-    local profile_name="Basic"
-    local profile_plist="$HOME/Library/Preferences/com.apple.Terminal.plist"
     
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        # Check if the font is already set
-        current_font=$(defaults read "$profile_plist" "Window Settings" -dict "$profile_name" -dict "Font" -data | base64 --decode | plutil -convert xml1 -o - - | grep -A1 "string" | grep -oP '(?<=<string>).*?(?=</string>)' | head -n 1)
-        
-        if [[ "$current_font" == "$font_name" ]]; then
-            log_info "$font_name is already set for Terminal. Skipping..."
+        if defaults read com.apple.Terminal "Default Window Settings" | grep -q "$font_name"; then
+            log_info "$font is already set for Terminal. Skipping..."
             return 0
         fi
-        
-        # Set the font for the Terminal profile
-        log_info "Setting $font_name for Terminal..."
-        /usr/libexec/PlistBuddy -c "Set :'Window Settings':'$profile_name':'Font':'_name' '$font_name'" "$profile_plist"
-        /usr/libexec/PlistBuddy -c "Set :'Window Settings':'$profile_name':'Font':'size' 11" "$profile_plist"
-        /usr/libexec/PlistBuddy -c "Copy 'Window Settings':'$profile_name' 'Startup Window Settings'" "$profile_plist"
-        /usr/libexec/PlistBuddy -c "Copy 'Window Settings':'$profile_name' 'Default Window Settings'" "$profile_plist"
+
+        defaults write com.apple.Terminal "Default Window Settings" -string "$font_name"
+        defaults write com.apple.Terminal "Startup Window Settings" -string "$font_name" >"$temp_file" 2>&1 &
+        spinner $! "Setting $font_name for Terminal"
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
         if gsettings get org.gnome.desktop.interface monospace-font-name | grep -q "$font_name"; then
-            log_info "$font_name is already set for GNOME Terminal. Skipping..."
+            log_info "$font is already set for GNOME Terminal. Skipping..."
             return 0
         fi
+        log_info "Setting $font for GNOME Terminal..."
         gsettings set org.gnome.desktop.interface monospace-font-name "$font_name 11" >"$temp_file" 2>&1 &
         spinner $! "Setting $font_name for GNOME Terminal"
     fi
