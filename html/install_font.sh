@@ -87,6 +87,8 @@ set_terminal_font() {
 
         defaults write com.apple.Terminal "Default Window Settings" -string "$font_name"
         defaults write com.apple.Terminal "Startup Window Settings" -string "$font_name" >"$temp_file" 2>&1 &
+        osascript -e "tell application \"Terminal\" to set the font name of window 1 to \"$font_name\""
+        osascript -e "tell application \"Terminal\" to set the font size of window 1 to 11"
         spinner $! "Setting $font_name for Terminal"
     elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
         if gsettings get org.gnome.desktop.interface monospace-font-name | grep -q "$font_name"; then
