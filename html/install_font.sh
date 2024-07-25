@@ -33,6 +33,12 @@ fi
 install_and_set_terminal_font() {
     local font="Hack Nerd Font"
     local font_dir="$HOME/.local/share/fonts"
+    local font_file="$font_dir/Hack Regular Nerd Font Complete.ttf"
+
+    if [[ -f "$font_file" ]]; then
+        echo -e "${CYAN}$font is already installed. Skipping...${NC}"
+        return 0
+    fi
 
     echo -e "${CYAN}Installing $font...${NC}"
 
@@ -40,7 +46,7 @@ install_and_set_terminal_font() {
     local font_urls=(
         "https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hack.zip"
     )
-    
+
     for font_url in "${font_urls[@]}"; do
         local temp_zip=$(mktemp)
         curl -fLo "$temp_zip" "$font_url" >"$temp_file" 2>&1 &
@@ -79,6 +85,11 @@ install_and_set_console_font() {
     local font_url="https://github.com/slavfox/Cozette/releases/download/v.1.24.1/cozette_hidpi.psf"
     local font_path="/usr/share/consolefonts/cozette_hidpi.psf"
     local temp_file=$(mktemp)
+
+    if [[ -f "$font_path" ]]; then
+        echo -e "${CYAN}Cozette font is already installed. Skipping...${NC}"
+        return 0
+    fi
 
     echo -e "${CYAN}Installing Cozette font for the console...${NC}"
 
