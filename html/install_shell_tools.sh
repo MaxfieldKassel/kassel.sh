@@ -104,18 +104,12 @@ install_grc() {
     fi
 }
 
-# Function to install Powerbash10k
-install_powerbash10k() {
-    if [ -d "$HOME/.oh-my-bash/custom/themes/powerbash10k" ]; then
-        echo -e "${CYAN}Powerbash10k is already installed.${NC}"
-    else
-        echo -e "${CYAN}Installing Powerbash10k...${NC}"
-        git clone --depth=1 https://github.com/Amar1729/powerbash10k.git $HOME/.oh-my-bash/custom/themes/powerbash10k >"$temp_file" 2>&1 &
-        spinner $! "Installing Powerbash10k"
-    fi
+# Function to configure Powerbash10k for Oh-My-Bash
+configure_powerbash10k() {
     if ! grep -q 'OSH_THEME="powerbash10k/powerbash10k"' "$HOME/.bashrc"; then
+        echo -e "${CYAN}Configuring Powerbash10k theme for Oh-My-Bash...${NC}"
         sed -i 's|OSH_THEME=".*"|OSH_THEME="powerbash10k/powerbash10k"|' "$HOME/.bashrc"
-        echo -e "${CYAN}Enabled Powerbash10k theme for oh-my-bash.${NC}"
+        echo -e "${CYAN}Enabled Powerbash10k theme for Oh-My-Bash.${NC}"
     else
         echo -e "${CYAN}Powerbash10k theme is already enabled.${NC}"
     fi
@@ -133,7 +127,7 @@ install_oh_my_bash() {
 
     install_bash_completion
     install_grc
-    install_powerbash10k
+    configure_powerbash10k
 
     if grep -q "source /usr/share/bash-completion/bash_completion" "$HOME/.bashrc"; then
         if ask "Configuration for bash-completion already exists. Do you want to back it up?"; then
