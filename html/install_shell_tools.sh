@@ -108,7 +108,7 @@ install_grc() {
 configure_powerbash10k() {
     if ! grep -q 'OSH_THEME="powerbash10k/powerbash10k"' "$HOME/.bashrc"; then
         echo -e "${CYAN}Configuring Powerbash10k theme for Oh-My-Bash...${NC}"
-        sed -i 's|OSH_THEME=".*"|OSH_THEME="powerbash10k/powerbash10k"|' "$HOME/.bashrc"
+        sed -i 's|OSH_THEME=".*"|OSH_THEME="powerbash10k"|' "$HOME/.bashrc"
         echo -e "${CYAN}Enabled Powerbash10k theme for Oh-My-Bash.${NC}"
     else
         echo -e "${CYAN}Powerbash10k theme is already enabled.${NC}"
