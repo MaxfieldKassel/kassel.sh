@@ -80,13 +80,7 @@ install_oh_my_zsh() {
     install_zsh_autosuggestions
     install_zsh_syntax_highlighting
     install_powerlevel10k
-
-    if grep -q "plugins=(git)" "$HOME/.zshrc"; then
-        if ask "Configuration for git plugin already exists. Do you want to back it up?"; then
-            cp "$HOME/.zshrc" "$HOME/.zshrc.bak"
-            echo -e "${CYAN}Backup created at $HOME/.zshrc.bak.${NC}"
-        fi
-    fi
+    
     if ! grep -q "zsh-autosuggestions" "$HOME/.zshrc"; then
         sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
         echo -e "${CYAN}Enabled git, zsh-autosuggestions, and zsh-syntax-highlighting plugins for oh-my-zsh.${NC}"
