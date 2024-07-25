@@ -22,12 +22,12 @@ log_error() {
 
 # Function to log info messages
 log_info() {
-    echo -e "${CYAN}    $1${NC}"
+    echo -e "${CYAN}     $1${NC}"
 }
 
 # Function to log success messages
 log_success() {
-    echo -e "${GREEN}    $1${NC}"
+    echo -e "${GREEN}     $1${NC}"
 }
 
 # Function to print messages (used when needing user input)

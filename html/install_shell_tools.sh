@@ -205,6 +205,7 @@ install_shell_tools() {
         if ask "Do you want to switch to zsh?"; then
             # Change the default shell to zsh
             install_zsh
+            print_message "Please enter your password to change the default shell to zsh."
             chsh -s $(which zsh)
             current_shell="zsh"
         fi

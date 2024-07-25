@@ -2,7 +2,7 @@
 
 BASE_URL="https://kassel.sh"
 
-DEBUG=true
+DEBUG=false
 
 # Function to download and source a script
 download_and_source_script() {
