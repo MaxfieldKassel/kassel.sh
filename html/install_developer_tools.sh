@@ -31,12 +31,10 @@ fi
 install_macos_tools() {
     log_info "Checking for Xcode command line tools..."
     if ! xcode-select -p &>/dev/null; then
-        (xcode-select --install &)
-        spinner_pid=$!
+        xcode-select --install &> /dev/null &
         while ! xcode-select -p &>/dev/null; do
             sleep 5
-        done &
-        spinner $spinner_pid "Installing Xcode command line tools"
+        done 
     else
         log_info "Xcode command line tools already installed."
     fi
