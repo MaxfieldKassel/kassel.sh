@@ -157,5 +157,6 @@ install_shell_tools() {
 
 # Check if script is being executed or sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    $temp_file=$(mktemp)
     install_shell_tools
 fi
