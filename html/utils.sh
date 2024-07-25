@@ -105,3 +105,17 @@ check_and_install_utilities() {
         fi
     fi
 }
+
+#fix the above function
+is_headless() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS is not headless
+        return 0
+    # Check if the DISPLAY variable is not set and if gnome-terminal and dconf are not installed
+    elif [[ -z "$DISPLAY" ]] && ! command -v gnome-terminal &>/dev/null && ! command -v dconf &>/dev/null; then
+        # Linux headless check
+        return 1
+    else
+        return 0
+    fi
+}

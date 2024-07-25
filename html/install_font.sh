@@ -98,18 +98,8 @@ install_and_set_console_font() {
 
 # Function to install and set font
 install_and_set_font() {
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS is not headless
-        HEADLESS=0
-    # Check if the DISPLAY variable is not set and if gnome-terminal and dconf are not installed
-    elif [[ -z "$DISPLAY" ]] && ! command -v gnome-terminal &>/dev/null && ! command -v dconf &>/dev/null; then
-        # Linux headless check
-        HEADLESS=1
-    else
-        HEADLESS=0
-    fi
-
-    if [[ $HEADLESS -eq 1 ]]; then
+    is_headless
+    if [[ $? -eq 1 ]]; then
         log_debug "Headless system detected. Installing and setting Cozette font for the console..."
         install_and_set_console_font
     else

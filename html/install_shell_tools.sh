@@ -46,7 +46,13 @@ install_powerlevel10k() {
     if [ -f "$HOME/.p10k.zsh" ]; then
         ask "p10k.zsh is already installed. Do you want to overwrite it?" || return
     fi
-    curl -fsSL https://kassel.sh/conf/p10k.zsh -o "$HOME/.p10k.zsh" >"$temp_file" 2>&1 &
+
+    is_headless
+    if [ $? -eq 1 ]; then
+        curl -fsSL https://kassel.sh/conf/p10k-headless.zsh -o "$HOME/.p10k.zsh" >"$temp_file" 2>&1 &
+    else
+        curl -fsSL https://kassel.sh/conf/p10k.zsh -o "$HOME/.p10k.zsh" >"$temp_file" 2>&1 &
+    fi
     spinner $! "Downloading p10k.zsh"
 
     # Add configuration to .zshrc
