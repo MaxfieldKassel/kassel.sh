@@ -1,9 +1,36 @@
 #!/usr/bin/env bash
 
+BASE_URL="https://kassel.sh"
+
+# Function to download and source a script
+download_and_source_script() {
+  local script_name=$1
+  local temp_script=$(mktemp)
+  curl -s "$BASE_URL/$script_name" -o "$temp_script"
+  if [ $? -ne 0 ]; then
+    log_error "Failed to download $script_name. Exiting..."
+    rm "$temp_script"
+    exit 1
+  fi
+  source "$temp_script"
+  if [ $? -ne 0 ]; then
+    log_error "Failed to source $script_name. Exiting..."
+    rm "$temp_script"
+    exit 1
+  fi
+  rm "$temp_script"
+  log_debug "Downloaded and sourced $script_name"
+}
+
+# Add util functions if not already defined
+if ! declare -f spinner &>/dev/null; then
+    download_and_source_script "utils.sh"
+fi
+
 # Function to update package lists
 update_package_lists() {
     log_debug "Starting update_package_lists function"
-    echo -e "${CYAN}Updating package lists...${NC}"
+    log_info "Updating package lists..."
     if command -v apt-get &>/dev/null; then
         sudo apt update >"$temp_file" 2>&1 &
         spinner $! "Updating package lists (apt)"
@@ -20,7 +47,7 @@ update_package_lists() {
         brew update >"$temp_file" 2>&1 &
         spinner $! "Updating package lists (brew)"
     else
-        echo -e "${RED}No supported package manager found. Exiting...${NC}"
+        log_error "No supported package manager found. Exiting..."
         exit 1
     fi
 }
@@ -28,6 +55,7 @@ update_package_lists() {
 # Function to count packages needing an upgrade
 count_upgradable_packages() {
     log_debug "Starting count_upgradable_packages function"
+    local count=0
     if command -v apt-get &>/dev/null; then
         count=$(apt list --upgradable 2>/dev/null | grep -c 'upgradable')
     elif command -v yum &>/dev/null; then
@@ -39,17 +67,17 @@ count_upgradable_packages() {
     elif command -v brew &>/dev/null; then
         count=$(brew outdated | wc -l)
     else
-        echo -e "${RED}No supported package manager found. Exiting...${NC}"
+        log_error "No supported package manager found. Exiting..."
         exit 1
     fi
     log_debug "Upgradable packages count: $count"
-    echo "$count"
+    return $count
 }
 
 # Function to upgrade packages
 upgrade_packages() {
     log_debug "Starting upgrade_packages function"
-    echo -e "${CYAN}Upgrading packages...${NC}"
+    log_info "Upgrading packages..."
     if command -v apt-get &>/dev/null; then
         sudo apt upgrade -y >"$temp_file" 2>&1 &
         spinner $! "Upgrading packages (apt)"
@@ -66,7 +94,7 @@ upgrade_packages() {
         brew upgrade >"$temp_file" 2>&1 &
         spinner $! "Upgrading packages (brew)"
     else
-        echo -e "${RED}No supported package manager found. Exiting...${NC}"
+        log_error "No supported package manager found. Exiting..."
         exit 1
     fi
 }
@@ -75,16 +103,18 @@ update_and_upgrade() {
     log_debug "Starting update_and_upgrade function"
     update_package_lists
 
-    package_count=$(count_upgradable_packages)
+    count_upgradable_packages
+    package_count=$?
     if [[ "$package_count" -eq 0 ]]; then
-        echo -e "${CYAN}No packages to upgrade.${NC}"
+        log_info "No packages to upgrade."
     else
-        echo -e "${CYAN}$package_count packages need upgrading.${NC}"
+        log_info "$package_count packages need upgrading."
         if ask "Do you want to upgrade all packages?"; then
             upgrade_packages
         fi
     fi
 }
+
 # Check if script is being executed or sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     DEBUG=false
