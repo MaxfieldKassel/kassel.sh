@@ -59,9 +59,9 @@ install_macos_tools() {
             echo 'eval "$(/opt/homebrew/bin/brew shellenv)"'
         } >>~/.zshrc
 
-        # Source ~/.bashrc
-        log_info "Sourcing ~/.bashrc..."
-        source ~/.bashrc
+        # Source ~/.zshrc
+        log_info "Sourcing ~/.zshrc..."
+        source ~/.zshrc
 
     else
         log_info "Homebrew already installed."
