@@ -56,7 +56,7 @@ install_powerlevel10k() {
         spinner $! "Installing Powerlevel10k"
     fi
     if ! grep -q 'ZSH_THEME="powerlevel10k/powerlevel10k"' "$HOME/.zshrc"; then
-        sed -i 's|ZSH_THEME=".*"|ZSH_THEME="powerlevel10k/powerlevel10k"|' "$HOME/.zshrc"
+        sed -i '' 's|ZSH_THEME=".*"|ZSH_THEME="powerlevel10k/powerlevel10k"|' "$HOME/.zshrc"
         log_info "Enabled Powerlevel10k theme for oh-my-zsh."
     else
         log_info "Powerlevel10k theme is already enabled."
@@ -100,7 +100,7 @@ install_oh_my_zsh() {
     install_powerlevel10k
     
     if ! grep -q "zsh-autosuggestions" "$HOME/.zshrc"; then
-        sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
+        sed -i '' 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
         log_info "Enabled git, zsh-autosuggestions, and zsh-syntax-highlighting plugins for oh-my-zsh."
     else
         log_info "Plugins already configured in .zshrc."
@@ -109,7 +109,14 @@ install_oh_my_zsh() {
 
 # Function to install bash-completion
 install_bash_completion() {
-    if ! dpkg -l | grep -qw bash-completion; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        if ! brew list bash-completion &>/dev/null; then
+            brew install bash-completion >"$temp_file" 2>&1 &
+            spinner $! "Installing bash-completion"
+        else
+            log_info "bash-completion is already installed."
+        fi
+    elif ! dpkg -l | grep -qw bash-completion; then
         sudo apt-get install -y bash-completion >"$temp_file" 2>&1 &
         spinner $! "Installing bash-completion"
     else
@@ -141,7 +148,7 @@ install_grc() {
 configure_powerbash10k() {
     if ! grep -q 'OSH_THEME="powerbash10k/powerbash10k"' "$HOME/.bashrc"; then
         log_info "Configuring Powerbash10k theme for Oh-My-Bash..."
-        sed -i 's|OSH_THEME=".*"|OSH_THEME="powerbash10k"|' "$HOME/.bashrc"
+        sed -i '' 's|OSH_THEME=".*"|OSH_THEME="powerbash10k"|' "$HOME/.bashrc"
         log_info "Enabled Powerbash10k theme for Oh-My-Bash."
     else
         log_info "Powerbash10k theme is already enabled."
@@ -176,7 +183,14 @@ install_oh_my_bash() {
 
 # Function to install zsh
 install_zsh() {
-    if command -v apt-get &>/dev/null; then
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        if ! brew list zsh &>/dev/null; then
+            brew install zsh >"$temp_file" 2>&1 &
+            spinner $! "Installing zsh (brew)"
+        else
+            log_info "zsh is already installed."
+        fi
+    elif command -v apt-get &>/dev/null; then
         sudo apt install -y zsh >"$temp_file" 2>&1 &
         spinner $! "Installing zsh (apt)"
     elif command -v yum &>/dev/null; then
@@ -188,9 +202,6 @@ install_zsh() {
     elif command -v nix-env &>/dev/null; then
         nix-env -iA nixpkgs.zsh >"$temp_file" 2>&1 &
         spinner $! "Installing zsh (nix)"
-    elif command -v brew &>/dev/null; then
-        brew install zsh >"$temp_file" 2>&1 &
-        spinner $! "Installing zsh (brew)"
     else
         log_error "No supported package manager found. Exiting..."
         exit 1
