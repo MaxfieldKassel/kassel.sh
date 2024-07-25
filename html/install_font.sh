@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-DEBUG=false
 BASE_URL="https://kassel.sh"
 
 # The reason for this function is that some operating systems
@@ -121,6 +120,7 @@ install_and_set_font() {
 
 # Check if script is being executed or sourced
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    DEBUG=false
     # create a temporary file
     temp_file=$(mktemp)
 
