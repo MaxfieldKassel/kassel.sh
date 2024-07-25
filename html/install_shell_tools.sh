@@ -48,6 +48,17 @@ install_powerlevel10k() {
     fi
     curl -fsSL https://kassel.sh/conf/p10k.zsh -o "$HOME/.p10k.zsh" >"$temp_file" 2>&1 &
     spinner $! "Downloading p10k.zsh"
+
+    # Add configuration to .zshrc
+    echo '# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.' >>"$HOME/.zshrc"
+    echo '# Initialization code that may require console input (password prompts, [y/n]' >>"$HOME/.zshrc"
+    echo '# confirmations, etc.) must go above this block; everything else may go below.' >>"$HOME/.zshrc"
+    echo 'if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then' >>"$HOME/.zshrc"
+    echo '  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"' >>"$HOME/.zshrc"
+    echo 'fi' >>"$HOME/.zshrc"
+    echo '' >>"$HOME/.zshrc"
+    echo '# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.' >>"$HOME/.zshrc"
+    echo '[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh' >>"$HOME/.zshrc"
 }
 
 # Function to install oh-my-zsh
