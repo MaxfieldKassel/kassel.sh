@@ -42,6 +42,12 @@ install_powerlevel10k() {
     else
         echo -e "${CYAN}Powerlevel10k theme is already enabled.${NC}"
     fi
+
+    if [ -f "$HOME/.p10k.zsh" ]; then
+        ask "p10k.zsh is already installed. Do you want to overwrite it?" || return
+    fi
+    curl -fsSL https://kassel.sh/conf/p10k.zsh -o "$HOME/.p10k.zsh" >"$temp_file" 2>&1 &
+    spinner $! "Downloading p10k.zsh"
 }
 
 # Function to install oh-my-zsh
@@ -99,8 +105,8 @@ install_grc() {
     spinner $! "Downloading grc.sh"
 
     if ! grep -q "source $HOME/.grc.sh" "$HOME/.bashrc"; then
-        echo 'export GRC_ALIASES=true' >> "$HOME/.bashrc"
-        echo "source $HOME/.grc.sh" >> "$HOME/.bashrc"
+        echo 'export GRC_ALIASES=true' >>"$HOME/.bashrc"
+        echo "source $HOME/.grc.sh" >>"$HOME/.bashrc"
     fi
 }
 
