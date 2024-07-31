@@ -47,6 +47,16 @@ install_zsh_syntax_highlighting() {
     fi
 }
 
+#Function to install zsh-vi-mode
+install_zsh_vi_mode() {
+    if [ -d "$HOME/.oh-my-zsh/custom/plugins/zsh-vi-mode" ]; then
+        log_info "zsh-vi-mode is already installed."
+    else
+        git clone https://github.com/jeffreytse/zsh-vi-mode.git $ZSH_CUSTOM/plugins/zsh-vi-mode >"$temp_file" 2>&1 &
+        spinner $! "Installing zsh-vi-mode"
+    fi
+}
+
 # Function to install Powerlevel10k
 install_powerlevel10k() {
     if [ -d "$HOME/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
@@ -101,14 +111,20 @@ install_oh_my_zsh() {
 
     install_zsh_autosuggestions
     install_zsh_syntax_highlighting
+    install_zsh_vi_mode
     install_powerlevel10k
     
     if ! grep -q "zsh-autosuggestions" "$HOME/.zshrc"; then
         if [[ "$OSTYPE" == "darwin"* ]]; then
-            sed -i '' 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
+            sed -i '' 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-vi-mode)/' "$HOME/.zshrc"
         else
-            sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$HOME/.zshrc"
+            sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-vi-mode)/' "$HOME/.zshrc"
         fi
+        
+        echo "" >>"$HOME/.zshrc"
+        echo "# Set bindkey to vi mode" >>"$HOME/.zshrc"
+        echo "bindkey -v" >>"$HOME/.zshrc"
+
         log_info "Enabled git, zsh-autosuggestions, and zsh-syntax-highlighting plugins for oh-my-zsh."
     else
         log_info "Plugins already configured in .zshrc."
