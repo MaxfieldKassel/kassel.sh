@@ -19,7 +19,7 @@ Kassel.sh provides a convenient setup script for Linux and macOS environments, a
 
 1. Clone the repository:
 
-   git clone https://github.com/yourusername/kassel.sh.git
+   git clone [https://github.com/yourusername/kassel.sh.git](https://github.com/MaxfieldKassel/kassel.sh)
    cd kassel.sh
 
 2. Start the Docker Compose service:
