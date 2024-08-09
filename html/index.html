@@ -33,7 +33,7 @@
       text-align: center;
       color: #7e0fff;
       background-color: #1a1f2a;
-      animation: textColor 10s ease infinite, glowEffect 10s ease infinite;
+      animation: textColor 20s ease infinite, glowEffect 20s ease infinite;
       border-radius: 10px;
     }
 
@@ -98,7 +98,7 @@
 
     @keyframes commandCopyColor {
       0% {
-        color: #0fffc1;
+        color: #00FFFF;
         /* Initial color */
       }
 
@@ -108,7 +108,7 @@
       }
 
       100% {
-        color: #0fffc1;
+        color: #00FFFF;
         /* Fade back to initial color */
       }
     }
@@ -123,7 +123,7 @@
       50% {
         background-color: #15ff00;
         /* Bright green color */
-        box-shadow: 0 0 10px 5px rgba(21, 255, 0, 0.8);
+        box-shadow: 0 0 5px 2px rgba(21, 255, 0, 0.8);
         /* Green glow */
       }
 
@@ -150,7 +150,7 @@
 
     pre {
       margin: 0;
-      color: #0fffc1;
+      color: #00FFFF;
       font-size: 1rem;
       overflow-x: auto;
       white-space: nowrap;
@@ -163,7 +163,7 @@
     #copy-button {
       margin-right: 1vw;
       padding: 0.5vw 1vw;
-      background-color: #0fffc1;
+      background-color: #00FFFF;
       color: #151823;
       border: none;
       border-radius: 0.5vw;
@@ -174,7 +174,7 @@
     }
 
     #copy-button:hover {
-      background-color: #7e0fff;
+      background-color: #6e12d7;
       color: #ffffff;
       transform: scale(1.1);
     }
@@ -184,7 +184,7 @@
       bottom: 2vw;
       right: 2vw;
       padding: 0.5vw 1vw;
-      background-color: #7e0fff;
+      background-color: #6e12d7;
       color: #ffffff;
       text-decoration: none;
       border-radius: 0.5vw;
@@ -194,8 +194,9 @@
     }
 
     .github-button:hover {
-      background-color: #0fffc1;
-      transform: scale(1.1);
+      background-color: #00FFFF;
+      color: #151823;
+      transform: scale(1.05);
     }
   </style>
 </head>
@@ -221,10 +222,10 @@
         const copyButton = document.getElementById('copy-button');
 
         // Trigger text color change
-        commandElement.style.animation = 'commandCopyColor 2s ease';
+        commandElement.style.animation = 'commandCopyColor 1s ease';
 
         // Trigger button glow
-        copyButton.style.animation = 'buttonCopyGlow 2s ease';
+        copyButton.style.animation = 'buttonCopyGlow 1s ease';
 
         // Remove animations after they complete
         setTimeout(() => {
