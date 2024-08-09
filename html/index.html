@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Base off of this codepen: https://codepen.io/georgehastings/pen/xgwxgo-->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kassel.sh</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      background-color: #252B37;
+      font-family: monospace;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #main-container {
+      width: 100%;
+      max-width: 500px;
+      padding: 20px;
+      text-align: center;
+      color: #7e0fff;
+      background-color: #1a1f2a;
+      animation: textColor 10s ease infinite, glowEffect 10s ease infinite;
+      border-radius: 10px;
+    }
+
+    #main-container h1,
+    #main-container p,
+    #copy-button {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      margin: 0;
+    }
+
+    @keyframes textColor {
+      0% {
+        color: #7e0fff;
+      }
+
+      25% {
+        color: #0fffc1;
+      }
+
+      50% {
+        color: #ff6f00;
+      }
+
+      75% {
+        color: #15ff00;
+      }
+
+      100% {
+        color: #7e0fff;
+      }
+    }
+
+    @keyframes glowEffect {
+      0% {
+        box-shadow: 0 0 10px 2px rgba(127, 15, 255, 0.3),
+          0 0 20px 5px rgba(127, 15, 255, 0.15);
+      }
+
+      25% {
+        box-shadow: 0 0 10px 3px rgba(15, 255, 193, 0.3),
+          0 0 20px 6px rgba(15, 255, 193, 0.15);
+      }
+
+      50% {
+        box-shadow: 0 0 10px 4px rgba(255, 111, 0, 0.3),
+          0 0 20px 7px rgba(255, 111, 0, 0.15);
+      }
+
+      75% {
+        box-shadow: 0 0 10px 3px rgba(21, 255, 0, 0.3),
+          0 0 20px 5px rgba(21, 255, 0, 0.15);
+      }
+
+      100% {
+        box-shadow: 0 0 10px 2px rgba(127, 15, 255, 0.3),
+          0 0 20px 5px rgba(127, 15, 255, 0.15);
+      }
+    }
+
+    @keyframes commandCopyColor {
+      0% {
+        color: #0fffc1;
+        /* Initial color */
+      }
+
+      50% {
+        color: #15ff00;
+        /* Bright green color */
+      }
+
+      100% {
+        color: #0fffc1;
+        /* Fade back to initial color */
+      }
+    }
+
+    @keyframes buttonCopyGlow {
+      0% {
+        background-color: #0fffc1;
+        /* Initial color */
+        box-shadow: none;
+      }
+
+      50% {
+        background-color: #15ff00;
+        /* Bright green color */
+        box-shadow: 0 0 10px 5px rgba(21, 255, 0, 0.8);
+        /* Green glow */
+      }
+
+      100% {
+        background-color: #0fffc1;
+        /* Fade back to initial color */
+        box-shadow: none;
+      }
+    }
+
+    .command-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #1e2433;
+      padding: 1vw;
+      border-radius: 0.5vw;
+      margin-top: 1vw;
+      width: 100%;
+      box-shadow: none !important;
+      filter: none !important;
+      user-select: text;
+    }
+
+    pre {
+      margin: 0;
+      color: #0fffc1;
+      font-size: 1rem;
+      overflow-x: auto;
+      white-space: nowrap;
+      background-color: inherit;
+      padding: 0;
+      transition: color 1s ease;
+      /* Smooth transition for color change */
+    }
+
+    #copy-button {
+      margin-right: 1vw;
+      padding: 0.5vw 1vw;
+      background-color: #0fffc1;
+      color: #151823;
+      border: none;
+      border-radius: 0.5vw;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: transform 0.2s ease;
+    }
+
+    #copy-button:hover {
+      background-color: #7e0fff;
+      color: #ffffff;
+      transform: scale(1.1);
+    }
+
+    .github-button {
+      position: fixed;
+      bottom: 2vw;
+      right: 2vw;
+      padding: 0.5vw 1vw;
+      background-color: #7e0fff;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 0.5vw;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: transform 0.2s ease;
+    }
+
+    .github-button:hover {
+      background-color: #0fffc1;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="main-container">
+    <h1>Kassel.sh</h1>
+    <br>
+    <p>To install, run the following command in your terminal:</p>
+    <div class="command-container">
+      <button id="copy-button" onclick="copyCommand()">Copy</button>
+      <pre><code id="command">bash -c "$(curl -sSL kassel.sh)"</code></pre>
+    </div>
+  </div>
+
+  <a href="https://github.com/MaxfieldKassel/kassel.sh" class="github-button">Click to learn more</a>
+
+  <script>
+    function copyCommand() {
+      const commandText = document.getElementById('command').textContent;
+      navigator.clipboard.writeText(commandText).then(function() {
+        const commandElement = document.querySelector('.command-container pre');
+        const copyButton = document.getElementById('copy-button');
+
+        // Trigger text color change
+        commandElement.style.animation = 'commandCopyColor 2s ease';
+
+        // Trigger button glow
+        copyButton.style.animation = 'buttonCopyGlow 2s ease';
+
+        // Remove animations after they complete
+        setTimeout(() => {
+          commandElement.style.animation = '';
+          copyButton.style.animation = '';
+        }, 2000);
+      }, function(err) {
+        alert('Failed to copy: ', err);
+      });
+    }
+  </script>
+</body>
+
+</html>
