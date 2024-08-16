@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-COMMON_SOFTWARE="git neovim curl wget htop fzf git-lfs tree jq unzip zip"
+COMMON_SOFTWARE="git neovim curl wget htop fzf git-lfs tree jq unzip zip ripgrep eza delta tmux"
 
 BASE_URL="https://kassel.sh"
 
