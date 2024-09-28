@@ -63,7 +63,7 @@ auto_install() {
 
 # Function to install manually
 manual_install() {
-    
+    echo "Manual installation is not yet implemented."   
 }
 
 # Function to open the utilities menu
