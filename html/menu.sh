@@ -48,6 +48,8 @@ display_menu() {
         # Check if the input is a valid number
         if [[ "$choice" =~ ^[0-9]$ ]]; then
             if [[ "$choice" -ge 1 && "$choice" -le "${#options[@]}" ]]; then
+                # Set color back to default
+                echo -e "${RESET}"
                 return $((choice - 1)) # Return the selected option index
             fi
         fi
@@ -61,7 +63,7 @@ auto_install() {
 
 # Function to install manually
 manual_install() {
-    echo "Installing manually..."
+    
 }
 
 # Function to open the utilities menu
